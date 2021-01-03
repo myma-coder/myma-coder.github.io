@@ -1,0 +1,465 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My's Blog - 欢迎来到my博客</title><meta name="author" content="my"><meta name="copyright" content="my"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="mylovewxy">
+<meta property="og:type" content="website">
+<meta property="og:title" content="My&#39;s Blog">
+<meta property="og:url" content="https://mylovewxy.live/page/2/index.html">
+<meta property="og:site_name" content="My&#39;s Blog">
+<meta property="og:description" content="mylovewxy">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png">
+<meta property="article:author" content="my">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png"><link rel="shortcut icon" href="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102234642.png"><link rel="canonical" href="https://mylovewxy.live/page/2/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="HWj4HeAzpDuXluCc8U9l8XQCSLsGLizAuSWX2lSmfMk"/><meta name="baidu-site-verification" content="c9288e2323dadc71f0b9f364d0f0e5d1"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.js" defer></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: {"appId":"ZC1U9SKKA0","apiKey":"af97186214e541f175f75156962ec1b9","indexName":"my-hexo-blog","hits":{"per_page":6},"languages":{"input_placeholder":"搜索文章","hits_empty":"找不到您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，用时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2021-01-03 13:51:44'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}const fontSizeVal = saveToLocal.get('global-font-size')
+if (fontSizeVal !== undefined) {
+  document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+}})()</script><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_08dlznx1ovdr.css"><style type="text/css">#toggle-sidebar {left:100px}</style><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_6mku4w9mrvv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC"><script src="/live2d-widget/autoload.js"></script><!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">--><!--<script src="https://cdn.jsdelivr.net/gh/mywxy/live2d-widget@latest/autoload.js"></script>--><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/talk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-wo"></i><span> 关于我的</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://gitee.com/mymywxy/pic-go/raw/master/img/20201216164631.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">My's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/talk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-wo"></i><span> 关于我的</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">My's Blog</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/mywxy" target="_blank" title="Github"><i class="iconfont icon-github"></i></a><a class="social-icon" href="mailto:mymywxy@gmail.com" target="_blank" title="Email"><i class="iconfont icon-youxiang-mail_fill"></i></a><a class="social-icon" href="https://twitter.com/yongye13" target="_blank" title="Twitter"><i class="iconfont icon-twitter"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/3dc3aa4b/" title="Java之基础知识总结（一）">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135300.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java之基础知识总结（一）"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/3dc3aa4b/" title="Java之基础知识总结（一）">Java之基础知识总结（一）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-28T15:32:59.000Z" title="发表于 2020-12-28 23:32:59">2020-12-28</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/Java/">Java</a></span></div><div class="content"> 关键字
+
+
+关键字即为被Java语言赋予特定含义的单词
+
+
+特点是全部小写
+
+
+常见关键字：
+
+
+JAVA的保留关键字（2个）
+
+const——常量，常数：用于修改字段或局部变量的声明。
+goto——转到：指定跳转到标签，找到标签后，程序将处理从下一行开始的命令
+
+
+
+访问修饰符的关键字（3个）
+
+public （公有的）：可跨包
+protected (受保护的)：当前包内可用\
+private (私有的)：当前类可用
+
+
+
+定义类、接口、抽象类和实现接口、继承类的关键字、实例化对象（6个）
+
+class (类)：public class A(){}花括号里是已实现的方法体，类名需要与文件名相同
+interface (接口)：public interface B(){}花括号里有方法体，但没有实现，方法体句子后面是英文分号;结尾
+abstract (声明抽象)：public abstract class C(){}介于类与接口中间，可以有，也可以没有已经实现的方法体
+implemenst (实现)：用于类或接口，实现接口public class A interface B(){}
+e ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/cc446ced/" title="Java基本功">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231181833.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基本功"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/cc446ced/" title="Java基本功">Java基本功</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-28T07:32:59.000Z" title="发表于 2020-12-28 15:32:59">2020-12-28</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/Java/">Java</a></span></div><div class="content">
+
+
+1. Java 基本功
+
+1.1. Java 入门（基础概念与常识）
+
+1.1.1. Java 语言有哪些特点?
+1.1.2. 关于 JVM JDK 和 JRE 最详细通俗的解答
+
+1.1.2.1. JVM
+1.1.2.2. JDK 和 JRE
+
+
+1.1.3. Oracle JDK 和 OpenJDK 的对比
+1.1.4. Java 和 C++的区别?
+1.1.5. 什么是 Java 程序的主类 应用程序和小程序的主类有何不同?
+1.1.6. import java 和 javax 有什么区别？
+1.1.7. 为什么说 Java 语言“编译与解释并存”？
+
+
+1.2. Java 语法
+
+1.2.1. 字符型常量和字符串常量的区别?
+1.2.2. 关于注释？
+1.2.3. 标识符和关键字的区别是什么？
+1.2.4. Java中有哪些常见的关键字？
+1.2.5. 自增自减运算符
+1.2.6. continue、break、和return的区别是什么？
+1.2.7. Java泛型了解么？什么是类型擦除？介绍一下常用的通配符？
+1.2.8. ==和equals的区别
+1.2.9. ha ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/4f0ba5bf/" title="冬至">     <img class="post_bg" src="https://music.163.com/api/img/blur/109951165541370017?param=170y170" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="冬至"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/4f0ba5bf/" title="冬至">冬至</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-21T14:49:44.000Z" title="发表于 2020-12-21 22:49:44">2020-12-21</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E6%84%9F%E6%82%9F/">感悟</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/music/">music</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/%E9%9A%8F%E6%84%9F/">随感</a></span></div><div class="content">
+  
+  
+    加密文章，请输入密码，输入后请刷新
+    
+  
+  7cdfed99358d50e9220497941f4f131b41e9edd17a97374655f382aa92406284ab97a349b3a37b42ceff78e8ac8f581fef714029a83632e8d125849262c7d6aac2fd0ea29aa45893282c7177de8bfce82ee5445a7deef9a50aa85eb15f545a3cd13a4ba880f1f4947228bbcf9dee189dc4da3cfddad04b7f062ae0bd62985709ee096995832f4375120f8d686857a630727213cdcedb30fddb7ba77342c9abbadc30046caf934549ea57c4d3fc4e1d228efb6a09afcd55d5985d14fe179e667a30bc678c62cf5d5f092fdba645d7946daf37f1f6f46d6bc68dd1fc472b35e63b81d731dd87f92 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/f2d3a530/" title="自洽">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201219155652.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="自洽"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/f2d3a530/" title="自洽">自洽</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-19T07:43:44.000Z" title="发表于 2020-12-19 15:43:44">2020-12-19</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E6%84%9F%E6%82%9F/">感悟</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/music/">music</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/%E9%9A%8F%E6%84%9F/">随感</a></span></div><div class="content">
+  
+  
+    加密文章，请输入密码，输入后请刷新
+    
+  
+  5894f32bea45f283d3abb01c929b9aef3b3e224b94f86c4efb69f2af15b75a3148063aa7f5bfb8287c21d2e8e8597a05c8ac412c5d165560db021067bc07b078608f6c246db6954e6e6775d1ecfaff3b4c3974b2caaa3b358cd73e8f96fd86829cbe9e9a95c3c078275244ef170cd897ae625eb5b2081441daa9c5aa9e4969f1ade1ead5245d70407be51764d21bbe59c06cdfc778ce3239739a313e7d04d8e7c8f12ef613ffccbe05e041d382605dd495b888925e3c91594136133c8404b6dbe9a67ba54aefb20695a0ec4e0eea9889793b191379191d95f1c9351e8f5acb5ce4d52d6f51ce3 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/3518881f/" title="内部排序算法">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201216165926.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内部排序算法"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/3518881f/" title="内部排序算法">内部排序算法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-18T07:32:28.000Z" title="发表于 2020-12-18 15:32:28">2020-12-18</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/sort%EF%BC%8Ccs/">sort，cs</a></span></div><div class="content"> 内部排序
+我的博客
+ 分类
+
+基于比较，基本操作，最好时间下限为O(nlog⁡2n).O(n \log _{2} n).O(nlog2​n).
+交换排序（快速排序，冒泡排序）；选择排序（直接选择排序，堆排序）；插入排序（直接插入，折半插入，希尔排序）；归并排序（二路归并，多路归并）
+不基于比较：基数排序
+
+ 基于比较
+对于n个待排序元素，在未比较时，可能的正确结果有n!种，在经过一次比较后，其中两个元素的顺序被确定，所以可能的正确结果剩余n!/2种，直到经过m次比较，剩余可能性n!/(2m)n!/(2^m)n!/(2m)种直到n!/(2m)&lt;=1n!/(2^m)&lt;=1n!/(2m)&lt;=1时，结果只剩余一种。此时的比较次数m为O(nlog⁡2n).O(n \log _{2} n).O(nlog2​n).)次。
+所以基于排序的比较算法，最优情况下，复杂度是O(nlog⁡2n).O(n \log _{2} n).O(nlog2​n).的。
+ 交换排序
+ 冒泡排序
+
+将待排序的序列看作是竖着排列的“气泡”，关键字小的轻，从而要往上浮
+对该序列遍历，最多n-1趟可以实现排序， ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/de4a8b74/" title="两两互斥=相互独立？">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201217160043.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="两两互斥=相互独立？"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/de4a8b74/" title="两两互斥=相互独立？">两两互斥=相互独立？</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-17T07:48:41.000Z" title="发表于 2020-12-17 15:48:41">2020-12-17</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/math/">math</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/%E6%A6%82%E7%8E%87%E8%AE%BA/">概率论</a></span></div><div class="content">
+两道概率论中的有趣问题。
+
+ 两两互斥=相互独立？
+两两互斥 ⇒\Rightarrow⇒ 相互独立
+相互独立 ⇏\nRightarrow⇏两两互斥
+有四个大小质地一样的球,分别在其上写上数字 1 , 2,3 和“1,2,3”,即第 4 个球上 1,2,3 这三个数字都有. 引进三个 事件:
+Ai={ 随机抽出一球,求上有数字 i},i=1,2,3A_{i}=\{\text { 随机抽出一球,求上有数字 } i\}, i=1,2,3
+Ai​={ 随机抽出一球,求上有数字 i},i=1,2,3
+所谓随机抽出一球,即每球被抽出的概率都是 1/4.1 / 4 .1/4. 易见 P(A1)=P\left(A_{1}\right)=P(A1​)= P(A2)=P(A3)=1/2.P\left(A_{2}\right)=P\left(A_{3}\right)=1 / 2 .P(A2​)=P(A3​)=1/2. 因为,为使事件 A1A_{1}A1​ 发生,必须抽出第一球 或第四球,有 2 种可能. 又 P(A1A2)=P(A1A3)=P(A2A3)=P\left(A_{1} A_{2}\right) ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/posts/a8a300c6/" title="e3.exe的逆向分析">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="e3.exe的逆向分析"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/a8a300c6/" title="e3.exe的逆向分析">e3.exe的逆向分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-16T06:02:24.000Z" title="发表于 2020-12-16 14:02:24">2020-12-16</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/">逆向分析</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/Crackme%E7%B3%BB%E5%88%97/">Crackme系列</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/%E5%90%BE%E7%88%B1%E7%A0%B4%E8%A7%A3/">吾爱破解</a></span></div><div class="content"> 运行截图
+
+ 逆向思路
+提示如下：
+
+
+
+使用IDR加载Delphi程序，导出Map文件，将Map文件导入OD。
+
+
+使用Delphi逆向工具Darkde4
+
+可以看到，Panel1有两个方法，单击和双击，是一个按钮
+
+FromCreate   窗体的创建事件
+chkcode          校验代码
+KeyUp         响应的键盘的弹起
+DbClick     按钮的双击事件
+Click         按钮的单击事件
+
+
+通过1得到了几个事件的RVA，接下来进行分析，首先是Click事件：
+拖入OD
+右键复制Click的RVA
+打开OD，ctrl + G 粘贴点击OK
+
+F2设置断点
+
+运行测试
+输入一组用户名和注册码，双击之后单步调试
+
+出现用户名：
+
+
+此处getText为获取用户名。
+
+获取用户名长度，用户名长度+0x1E（30）
+
+出现“32”
+
+字符串拼接：
+
+循环0x13次：
+
+关键跳转：
+
+
+获取用户名
+获取用户名长度 将长度加上0x1E
+将长度转为字符串
+字符串拼接 拼接为长度+用户名+循环次数
+整个算法循环18次 最后的结果如上图
+[esi+0x30C ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/posts/aafa5158/" title="常用分布">     <img class="post_bg" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201216174515.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="常用分布"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/aafa5158/" title="常用分布">常用分布</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-12-16T04:33:52.000Z" title="发表于 2020-12-16 12:33:52">2020-12-16</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag article-meta__icon"></i><a class="article-meta__tags" href="/tags/%E6%A6%82%E7%8E%87%E8%AE%BA/">概率论</a><span class="article-meta__link">•</span><a class="article-meta__tags" href="/tags/%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0/">分布函数</a></span></div><div class="content"> 0-1分布   X~B（1,p)
+E(X)=p∗1+(1−p)∗0=pE(X)=p * 1+(1-p) * 0=pE(X)=p∗1+(1−p)∗0=p
+E(X2)=02∗(1−p)+12∗p=pE\left(X^{2}\right)=0^{2} *(1-p)+1^{2} * p=pE(X2)=02∗(1−p)+12∗p=p
+D(X)=E(X2)−E(X)2=p−p2=p(1−p)D(X)=E\left(X^{2}\right)-E(X)^{2}=p-p^{2}=p(1-p)D(X)=E(X2)−E(X)2=p−p2=p(1−p)
+ 二项分布 X~B(n,p)
+设 X=X1+X2+⋯+Xn,Xi∼B(1,p)X=X_{1}+X_{2}+\cdots+X_{n}, X_{i} \sim B(1, p)X=X1​+X2​+⋯+Xn​,Xi​∼B(1,p)
+E(X)=E(X1+X2+⋯+Xn)=∑i=1nE(Xi)=npE(X)=E\left(X_{1}+X_{2}+\cdots+X_{n}\right)=\sum_{i=1}^{n} E\left(X_{i}\right)=n pE(X)= ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">my</div><div class="author-info__description">我与我周旋久</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/mywxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/mywxy" target="_blank" title="Github"><i class="iconfont icon-github"></i></a><a class="social-icon" href="mailto:mymywxy@gmail.com" target="_blank" title="Email"><i class="iconfont icon-youxiang-mail_fill"></i></a><a class="social-icon" href="https://twitter.com/yongye13" target="_blank" title="Twitter"><i class="iconfont icon-twitter"></i></a></div></div></div><div class="card-widget card-pixiv"><div class="card-content"><div class="item-headline"><i class="fa fa-image" aria-hidden="true"></i><span>Pixiv日榜Top50</span><iframe src="https://cloud.mokeyjay.com/pixiv" frameborder="0" style="width:99%;height:380px;margin:0;"></iframe></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4832c1c6/" title="Leetcode题解（六）-哈希表"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102125531.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Leetcode题解（六）-哈希表"/></a><div class="content"><a class="title" href="/posts/4832c1c6/" title="Leetcode题解（六）-哈希表">Leetcode题解（六）-哈希表</a><time datetime="2021-01-03T05:46:24.000Z" title="发表于 2021-01-03 13:46:24">2021-01-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6f5d4dbe/" title="Leetcode题解（五）-双指针"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102125531.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Leetcode题解（五）-双指针"/></a><div class="content"><a class="title" href="/posts/6f5d4dbe/" title="Leetcode题解（五）-双指针">Leetcode题解（五）-双指针</a><time datetime="2021-01-02T08:03:26.000Z" title="发表于 2021-01-02 16:03:26">2021-01-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7b88f31d/" title="Java知识-注解"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java知识-注解"/></a><div class="content"><a class="title" href="/posts/7b88f31d/" title="Java知识-注解">Java知识-注解</a><time datetime="2021-01-02T06:08:39.000Z" title="发表于 2021-01-02 14:08:39">2021-01-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6a5f2d2c/" title="Leetcode题解（四）-动态规划"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102125531.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Leetcode题解（四）-动态规划"/></a><div class="content"><a class="title" href="/posts/6a5f2d2c/" title="Leetcode题解（四）-动态规划">Leetcode题解（四）-动态规划</a><time datetime="2021-01-01T06:38:34.000Z" title="发表于 2021-01-01 14:38:34">2021-01-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/597fdfd9/" title="Java并发基础"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231181833.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java并发基础"/></a><div class="content"><a class="title" href="/posts/597fdfd9/" title="Java并发基础">Java并发基础</a><time datetime="2021-01-01T04:07:04.000Z" title="发表于 2021-01-01 12:07:04">2021-01-01</time></div></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Leetcode/"><span class="card-category-list-name">Leetcode</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/math/"><span class="card-category-list-name">math</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%84%9F%E6%82%9F/"><span class="card-category-list-name">感悟</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="card-category-list-name">数据结构</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E9%80%86%E5%90%91/"><span class="card-category-list-name">逆向</span><span class="card-category-list-count">1</span></a></li>
+            
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/Java/" style="font-size: 1.5em; color: rgb(20, 37, 84)">Java</a><a href="/tags/leetcode/" style="font-size: 1.37em; color: rgb(65, 99, 167)">leetcode</a><a href="/tags/%E5%88%86%E6%B2%BB%E6%B3%95/" style="font-size: 1.1em; color: rgb(80, 78, 81)">分治法</a><a href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" style="font-size: 1.1em; color: rgb(44, 182, 49)">二分查找</a><a href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88/" style="font-size: 1.1em; color: rgb(70, 43, 72)">双指针</a><a href="/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/" style="font-size: 1.1em; color: rgb(91, 52, 82)">哈希表</a><a href="/tags/%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" style="font-size: 1.1em; color: rgb(164, 176, 52)">逆向分析</a><a href="/tags/Crackme%E7%B3%BB%E5%88%97/" style="font-size: 1.1em; color: rgb(10, 50, 90)">Crackme系列</a><a href="/tags/%E5%90%BE%E7%88%B1%E7%A0%B4%E8%A7%A3/" style="font-size: 1.1em; color: rgb(22, 40, 190)">吾爱破解</a><a href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" style="font-size: 1.1em; color: rgb(186, 71, 192)">位运算</a><a href="/tags/math/" style="font-size: 1.1em; color: rgb(188, 74, 114)">math</a><a href="/tags/%E6%A6%82%E7%8E%87%E8%AE%BA/" style="font-size: 1.23em; color: rgb(75, 94, 58)">概率论</a><a href="/tags/music/" style="font-size: 1.23em; color: rgb(84, 23, 41)">music</a><a href="/tags/%E9%9A%8F%E6%84%9F/" style="font-size: 1.23em; color: rgb(176, 74, 68)">随感</a><a href="/tags/%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0/" style="font-size: 1.1em; color: rgb(108, 141, 151)">分布函数</a><a href="/tags/sort%EF%BC%8Ccs/" style="font-size: 1.1em; color: rgb(92, 141, 35)">sort，cs</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/01/"><span class="card-archive-list-date">一月 2021</span><span class="card-archive-list-count">5</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/12/"><span class="card-archive-list-date">十二月 2020</span><span class="card-archive-list-count">13</span></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">18</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">59.5k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2021-01-03T05:51:43.484Z"></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://gitee.com/mymywxy/pic-go/raw/master/img/20201216164631.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By my</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a href="https://mylovewxy.live/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="algolia-search"><div class="search-dialog"><div class="search-dialog__title" id="algolia-search-title">Algolia</div><div id="algolia-input-panel"><div id="algolia-search-input"></div></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-stats"></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/algolia.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> {preloader.endLoading()})</script><div class="js-pjax"><script>function subtitleType () {
+  getScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js').then(() => {
+    jinrishici.load(function (result) {
+      if (true) {
+        var sub = "".length == 0 ? new Array() : "".split(',')
+        var content = result.data.content
+        var both = sub.unshift(content)
+        var typed = new Typed('#subtitle', {
+          strings: sub,
+          startDelay: 300,
+          typeSpeed: 150,
+          loop: false,
+          backSpeed: 50,
+        })
+      } else {
+        document.getElementById('subtitle').innerHTML = result.data.content
+      }
+    })
+  })
+}
+
+if (true) {
+  if (typeof Typed === 'function') {
+    subtitleType()
+  } else {
+    getScript('https://cdn.jsdelivr.net/npm/typed.js/lib/typed.min.js').then(subtitleType)
+  }
+} else {
+  subtitleType()
+}
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div class="aplayer no-destroy" data-id="754551416" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" muted></div><script src="https://cdn.jsdelivr.net/gh/lete114/CDN/Sum/title.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script><script src="//code.tidio.co/x1quuahdcuhkubwsyyqe4ug1m0jbfoqn.js" async="async"></script><script>function onTidioChatApiReady() {
+  window.tidioChatApi.hide();
+  window.tidioChatApi.on("close", function() {
+    window.tidioChatApi.hide();
+  });
+}
+if (window.tidioChatApi) {
+  window.tidioChatApi.on("ready", onTidioChatApiReady);
+} else {
+  document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+}
+
+var chatBtnFn = () => {
+  document.getElementById("chat_btn").addEventListener("click", function(){
+    window.tidioChatApi.show();
+    window.tidioChatApi.open();
+  });
+}
+chatBtnFn()
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config_change',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"]):not([href="/talk/"]):not([href="/music/"]):not([href="/no-pjax/"]):not([href="/movies/"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  if (typeof gtag === 'function') {
+    gtag('config', '', {'page_path': window.location.pathname});
+  }
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+
+document.addEventListener('pjax:send', function () {
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})</script><div class="GalMenu GalDropDown"><div class="circle" id="gal"><div class="ring"><a class="menuItem" href="javascript:void(0);" onclick="Mirror()"><span>主页</span></a><a class="menuItem" href="javascript:location.reload();"><span>刷新</span></a><a class="menuItem" href="javascript:history.go(1);"><span>前进</span></a><a class="menuItem" href="javascript:history.go(-1);"><span>后退</span></a><a class="menuItem" href="#"><span>返回顶部</span></a><a class="menuItem" href="/talk/"><span>说说</span></a></div></div><audio id="audio" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@v3.3.3_3/galmenu/galmenu.mp3"></audio></div><script defer="defer" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@bf_3.3.0_12/js/custom/galmenu.min.js"></script></div></body></html>

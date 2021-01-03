@@ -1,0 +1,428 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>e3.exe的逆向分析 | My's Blog</title><meta name="keywords" content="逆向分析,Crackme系列,吾爱破解"><meta name="author" content="my"><meta name="copyright" content="my"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="运行截图   逆向思路 提示如下：    使用IDR加载Delphi程序，导出Map文件，将Map文件导入OD。   使用Delphi逆向工具Darkde4  可以看到，Panel1有两个方法，单击和双击，是一个按钮  FromCreate   窗体的创建事件 chkcode          校验代码 KeyUp         响应的键盘的弹起 DbClick     按钮的双击事件 Cli">
+<meta property="og:type" content="article">
+<meta property="og:title" content="e3.exe的逆向分析">
+<meta property="og:url" content="https://mylovewxy.live/posts/a8a300c6/index.html">
+<meta property="og:site_name" content="My&#39;s Blog">
+<meta property="og:description" content="运行截图   逆向思路 提示如下：    使用IDR加载Delphi程序，导出Map文件，将Map文件导入OD。   使用Delphi逆向工具Darkde4  可以看到，Panel1有两个方法，单击和双击，是一个按钮  FromCreate   窗体的创建事件 chkcode          校验代码 KeyUp         响应的键盘的弹起 DbClick     按钮的双击事件 Cli">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg">
+<meta property="article:published_time" content="2020-12-16T06:02:24.000Z">
+<meta property="article:modified_time" content="2021-01-02T04:56:45.261Z">
+<meta property="article:author" content="my">
+<meta property="article:tag" content="逆向分析">
+<meta property="article:tag" content="Crackme系列">
+<meta property="article:tag" content="吾爱破解">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg"><link rel="shortcut icon" href="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102234642.png"><link rel="canonical" href="https://mylovewxy.live/posts/a8a300c6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="HWj4HeAzpDuXluCc8U9l8XQCSLsGLizAuSWX2lSmfMk"/><meta name="baidu-site-verification" content="c9288e2323dadc71f0b9f364d0f0e5d1"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.js" defer></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: {"appId":"ZC1U9SKKA0","apiKey":"af97186214e541f175f75156962ec1b9","indexName":"my-hexo-blog","hits":{"per_page":6},"languages":{"input_placeholder":"搜索文章","hits_empty":"找不到您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，用时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-01-02 12:56:45'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}const fontSizeVal = saveToLocal.get('global-font-size')
+if (fontSizeVal !== undefined) {
+  document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+}})()</script><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_08dlznx1ovdr.css"><style type="text/css">#toggle-sidebar {left:100px}</style><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_6mku4w9mrvv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC"><script src="/live2d-widget/autoload.js"></script><!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">--><!--<script src="https://cdn.jsdelivr.net/gh/mywxy/live2d-widget@latest/autoload.js"></script>--><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/talk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-wo"></i><span> 关于我的</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">My's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/talk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-wo"></i><span> 关于我的</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">e3.exe的逆向分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-12-16T06:02:24.000Z" title="发表于 2020-12-16 14:02:24">2020-12-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-01-02T04:56:45.261Z" title="更新于 2021-01-02 12:56:45">2021-01-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">571</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="运行截图"><a class="markdownIt-Anchor" href="#运行截图"></a> 运行截图</h2>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113195652.png" alt="image-20201112112020709" /></p>
+<h2 id="逆向思路"><a class="markdownIt-Anchor" href="#逆向思路"></a> 逆向思路</h2>
+<p>提示如下：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112112146.png" alt="image-20201112112145143" /></p>
+<ol>
+<li>
+<p>使用IDR加载Delphi程序，导出Map文件，将Map文件导入OD。</p>
+</li>
+<li>
+<p>使用Delphi逆向工具Darkde4</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112112651.png" alt="image-20201112112649506" /></p>
+<p>可以看到，Panel1有两个方法，单击和双击，是一个按钮</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112112811.png" alt="image-20201112112809706" /></p>
+<p>FromCreate   窗体的创建事件</p>
+<p>chkcode          校验代码</p>
+<p>KeyUp         响应的键盘的弹起</p>
+<p>DbClick     按钮的双击事件</p>
+<p>Click         按钮的单击事件</p>
+</li>
+<li>
+<p>通过1得到了几个事件的RVA，接下来进行分析，首先是Click事件：</p>
+<p>拖入OD</p>
+<p>右键复制Click的RVA</p>
+<p>打开OD，ctrl + G 粘贴点击OK</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112113701.png" alt="image-20201112113700321" /></p>
+<p>F2设置断点</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112113759.png" alt="image-20201112113757639" /></p>
+<p>运行测试</p>
+<p>输入一组用户名和注册码，双击之后单步调试</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112140012.png" alt="image-20201112135924618" /></p>
+<p>出现用户名：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112142833.png" alt="image-20201112142831970" /></p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112143034.png" alt="image-20201112143032497" /></p>
+<p>此处getText为获取用户名。</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112143548.png" alt="image-20201112143546620" /></p>
+<p>获取用户名长度，用户名长度+0x1E（30）</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112143729.png" alt="image-20201112143728625" /></p>
+<p>出现“32”</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112142859.png" alt="image-20201112142858046" /></p>
+<p>字符串拼接：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112143817.png" alt="image-20201112143816055" /></p>
+<p>循环0x13次：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112140104.png" alt="image-20201112140103376" /></p>
+<p>关键跳转：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112145259.png" alt="image-20201112144807917" /></p>
+<ol>
+<li>获取用户名</li>
+<li>获取用户名长度 将长度加上0x1E</li>
+<li>将长度转为字符串</li>
+<li>字符串拼接 拼接为长度+用户名+循环次数</li>
+<li>整个算法循环18次 最后的结果如上图</li>
+<li>[esi+0x30C]的值必须是0x85</li>
+</ol>
+</li>
+<li>
+<p>分析双击事件</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112145256.png" alt="image-20201112145255045" /></p>
+<p>获取长度</p>
+<p>长度+0x9</p>
+<p>长度转str</p>
+<p>循环：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112145715.png" alt="image-20201112145714553" /></p>
+<p>字符串拼接：长度+用户名+循环次数</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112145759.png" alt="image-20201112145758393" /></p>
+<p>[esi+0x30C]和0x3E作比较，如果成立，就把[esi+0x30C]赋值为0x85，也就满足了单击事件的条件</p>
+<p>[esi+0x30C]的值必须为0x3E</p>
+</li>
+<li>
+<p>有一个地方是把0x3E赋值给了[esi+0x30C]。</p>
+<p>OD中，右键-&gt;查找所有常量，输入3E，看看能不能找到mov [esi+0x30C],0x3E这样一条指令。如果能，那么这个就是真正校验的地方。</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112150023.png" alt="image-20201112150021636" /></p>
+<p>跟进：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112150157.png" alt="image-20201112150156441" /></p>
+<p>开头：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112150217.png" alt="image-20201112150216381" /></p>
+<p>注释显示这个是chkcode的校验事件下断点</p>
+</li>
+<li>
+<p>运行</p>
+<p>注册码刚输入1就停住了，分析</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112195848.png" alt="image-20201112195626009" /></p>
+<p>发现可疑字符串：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113202606.png" alt="image-20201113202605293" /></p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112231657.png" alt="image-20201112231655675" /></p>
+<p>直接拦截读取edx，使用keymake制作内存注册机：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113201801.png" alt="image-20201113201759959" /></p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113201912.png" alt="image-20201113201911026" /></p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113201950.png" alt="image-20201113201949716" /></p>
+<p>成功，接着分析算法·，尝试制作算法注册机</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113202905.png" alt="image-20201113202904189" /></p>
+<p>分析0x951C68 位置处何时写入，设置硬件断点</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113202749.png" alt="image-20201113202748542" /></p>
+<p>keyup中统计输入字符：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112222617.png" alt="image-20201112222615805" /></p>
+<p>首先获取用户名长度 然后将用户名长度+5，接着进行字符串拼接 拼接方式为黑头Sun Bird(用户名长度+5)dseloffc-012-OK(用户名)，拼接好的字符串就是密码。</p>
+</li>
+<li>
+<p>结果：</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201112151015.png" alt="image-20201112150942321" /></p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201113203446.png" alt="image-20201113203445323" /></p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">my</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://mylovewxy.live/posts/a8a300c6/">https://mylovewxy.live/posts/a8a300c6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://mylovewxy.live" target="_blank">My's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/">逆向分析</a><a class="post-meta__tags" href="/tags/Crackme%E7%B3%BB%E5%88%97/">Crackme系列</a><a class="post-meta__tags" href="/tags/%E5%90%BE%E7%88%B1%E7%A0%B4%E8%A7%A3/">吾爱破解</a></div><div class="post_share"><div class="social-share" data-image="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/de4a8b74/"><img class="prev-cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201217160043.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">两两互斥=相互独立？</div></div></a></div><div class="next-post pull-right"><a href="/posts/aafa5158/"><img class="next-cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201216174515.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">常用分布</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside_content" id="aside_content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text"> 运行截图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%86%E5%90%91%E6%80%9D%E8%B7%AF"><span class="toc-number">2.</span> <span class="toc-text"> 逆向思路</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By my</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a href="https://mylovewxy.live/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="algolia-search"><div class="search-dialog"><div class="search-dialog__title" id="algolia-search-title">Algolia</div><div id="algolia-input-panel"><div id="algolia-search-input"></div></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-stats"></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/algolia.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> {preloader.endLoading()})</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', '', 'katex-wrap')
+  })
+})()</script><script>function loadValine () {
+  function initValine () {
+    let initData = {
+      el: '#vcomment',
+      appId: 'buSSSFuN6K7Ged7sAE2oN8AA-gzGzoHsz',
+      appKey: 'IqykyUttD5viof2kqnPQy5aw',
+      placeholder: '昵称可以填写qq哦',
+      avatar: 'monsterid',
+      meta: 'nick,mail'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '//i0.hdslb.com/bfs/emote/',
+      emojiMaps: {"custom_37":"https://cdn.jsdelivr.net/gh/blogimg/picbed@latest/2020/04/22/097cd88f446efae87cb27de38c5eed15.png","custom_36":"https://cdn.jsdelivr.net/gh/blogimg/picbed@latest/2020/04/22/ec2166501d29bc1eb7380c22944db462.png","custom_35":"https://cdn.jsdelivr.net/gh/blogimg/picbed@latest/2020/04/22/8ca39f96c182e51cd752dde464157c2e.png","custom_34":"https://cdn.jsdelivr.net/gh/blogimg/picbed@latest/2020/04/22/0a65c5dd18872b56605c08f7bae2e8c8.png","cutom_33":"https://cdn.jsdelivr.net/gh/blogimg/picbed@latest/2020/04/22/ec3edbfe84684fdb1680307d261c3c7b.png","custom_32":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/31.webp","custom_31":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/30.gif","custom_30":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/29.webp","custom_29":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/28.webp","custom_28":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/27.webp","custom_27":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/26.webp","custom_26":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/25.jpg","custom_25":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/24.webp","custom_24":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/23.webp","custom_23":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/22.webp","custom_22":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/21.webp","custom_21":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/20.webp","custom_20":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/19.webp","custom_19":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/18.jpg","custom_18":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/17.webp","custom_17":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/16.webp","custom_16":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/15.webp","custom_15":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/14.webp","custom_14":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/13.webp","custom_13":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/12.webp","custom_12":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/11.webp","custom_11":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/10.webp","custom_10":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/9.webp","custom_9":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/8.webp","custom_8":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/7.webp","custom_7":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/6.gif","custom_6":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/5.gif","custom_5":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/4.jpg","custom_4":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/3.jpg","custom_3":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/2.webp","custom_2":"https://cdn.jsdelivr.net/gh/blogimg/emotion/custom/1.webp","custom_1":"https://cdn.jsdelivr.net/gh/blogimg/picbed@master/2020/04/19/c3164053d300cc5cca5e4dc3311842dc.png","custom_0":"https://cdn.jsdelivr.net/gh/blogimg/picbed@master/2020/04/19/6b5e768e524c8441ba66184bfdd86d4d.png","tv_doge":"6ea59c827c414b4a2955fe79e0f6fd3dcd515e24.png","tv_亲亲":"a8111ad55953ef5e3be3327ef94eb4a39d535d06.png","tv_偷笑":"bb690d4107620f1c15cff29509db529a73aee261.png","tv_再见":"180129b8ea851044ce71caf55cc8ce44bd4a4fc8.png","tv_冷漠":"b9cbc755c2b3ee43be07ca13de84e5b699a3f101.png","tv_发怒":"34ba3cd204d5b05fec70ce08fa9fa0dd612409ff.png","tv_发财":"34db290afd2963723c6eb3c4560667db7253a21a.png","tv_可爱":"9e55fd9b500ac4b96613539f1ce2f9499e314ed9.png","tv_吐血":"09dd16a7aa59b77baa1155d47484409624470c77.png","tv_呆":"fe1179ebaa191569b0d31cecafe7a2cd1c951c9d.png","tv_呕吐":"9f996894a39e282ccf5e66856af49483f81870f3.png","tv_困":"241ee304e44c0af029adceb294399391e4737ef2.png","tv_坏笑":"1f0b87f731a671079842116e0991c91c2c88645a.png","tv_大佬":"093c1e2c490161aca397afc45573c877cdead616.png","tv_大哭":"23269aeb35f99daee28dda129676f6e9ea87934f.png","tv_委屈":"d04dba7b5465779e9755d2ab6f0a897b9b33bb77.png","tv_害羞":"a37683fb5642fa3ddfc7f4e5525fd13e42a2bdb1.png","tv_尴尬":"7cfa62dafc59798a3d3fb262d421eeeff166cfa4.png","tv_微笑":"70dc5c7b56f93eb61bddba11e28fb1d18fddcd4c.png","tv_思考":"90cf159733e558137ed20aa04d09964436f618a1.png","tv_惊吓":"0d15c7e2ee58e935adc6a7193ee042388adc22af.png"},
+      enableQQ: true,
+      path: window.location.pathname,
+    }
+
+    if (false) { 
+      initData.requiredFields= (''.split(','))
+    }
+    
+    if (false) {
+      const otherData = false
+      initData = Object.assign({}, initData, otherData)
+    }
+    
+    const valine = new Valine(initData)
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div class="aplayer no-destroy" data-id="754551416" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" muted></div><script src="https://cdn.jsdelivr.net/gh/lete114/CDN/Sum/title.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script><script src="//code.tidio.co/x1quuahdcuhkubwsyyqe4ug1m0jbfoqn.js" async="async"></script><script>function onTidioChatApiReady() {
+  window.tidioChatApi.hide();
+  window.tidioChatApi.on("close", function() {
+    window.tidioChatApi.hide();
+  });
+}
+if (window.tidioChatApi) {
+  window.tidioChatApi.on("ready", onTidioChatApiReady);
+} else {
+  document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+}
+
+var chatBtnFn = () => {
+  document.getElementById("chat_btn").addEventListener("click", function(){
+    window.tidioChatApi.show();
+    window.tidioChatApi.open();
+  });
+}
+chatBtnFn()
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config_change',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"]):not([href="/talk/"]):not([href="/music/"]):not([href="/no-pjax/"]):not([href="/movies/"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  if (typeof gtag === 'function') {
+    gtag('config', '', {'page_path': window.location.pathname});
+  }
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+
+document.addEventListener('pjax:send', function () {
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})</script><div class="GalMenu GalDropDown"><div class="circle" id="gal"><div class="ring"><a class="menuItem" href="javascript:void(0);" onclick="Mirror()"><span>主页</span></a><a class="menuItem" href="javascript:location.reload();"><span>刷新</span></a><a class="menuItem" href="javascript:history.go(1);"><span>前进</span></a><a class="menuItem" href="javascript:history.go(-1);"><span>后退</span></a><a class="menuItem" href="#"><span>返回顶部</span></a><a class="menuItem" href="/talk/"><span>说说</span></a></div></div><audio id="audio" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@v3.3.3_3/galmenu/galmenu.mp3"></audio></div><script defer="defer" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@bf_3.3.0_12/js/custom/galmenu.min.js"></script></div></body></html>
