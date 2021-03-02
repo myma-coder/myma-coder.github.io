@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Log4j</title>
+      <link href="posts/63b10314/"/>
+      <url>posts/63b10314/</url>
+      
+        <content type="html"><![CDATA[<h1 id="使用log4j来进行日志输出"><a class="markdownIt-Anchor" href="#使用log4j来进行日志输出"></a> 使用Log4j来进行日志输出</h1><h2 id="导入jar"><a class="markdownIt-Anchor" href="#导入jar"></a> 导入jar</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210302154942.png" alt="image-20210302154940478" /></p><h2 id="测试"><a class="markdownIt-Anchor" href="#测试"></a> 测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Log4j;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ：MY</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> ：2021/3/2 15:41</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> org.apache.log4j.BasicConfigurator;</span><br><span class="line"><span class="keyword">import</span> org.apache.log4j.Level;</span><br><span class="line"><span class="keyword">import</span> org.apache.log4j.Logger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestLog4j</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> Logger logger = Logger.getLogger(TestLog4j.class);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        BasicConfigurator.configure();</span><br><span class="line">        logger.setLevel(Level.DEBUG);</span><br><span class="line">        logger.trace(<span class="string">&quot;跟踪信息&quot;</span>);</span><br><span class="line">        logger.debug(<span class="string">&quot;调试信息&quot;</span>);</span><br><span class="line">        logger.info(<span class="string">&quot;输出信息&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        logger.warn(<span class="string">&quot;警告信息&quot;</span>);</span><br><span class="line">        logger.error(<span class="string">&quot;错误信息&quot;</span>);</span><br><span class="line">        logger.fatal(<span class="string">&quot;致命信息&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="结果"><a class="markdownIt-Anchor" href="#结果"></a> 结果</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210302154923.png" alt="image-20210302154914741" /></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> java </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Leetcode每日一题</title>
       <link href="posts/736068b/"/>
       <url>posts/736068b/</url>
