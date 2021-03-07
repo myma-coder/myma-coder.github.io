@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>IDEA使用Maven运行项目</title>
+      <link href="posts/534dce78/"/>
+      <url>posts/534dce78/</url>
+      
+        <content type="html"><![CDATA[<h1 id="idea使用maven运行项目"><a class="markdownIt-Anchor" href="#idea使用maven运行项目"></a> IDEA使用Maven运行项目</h1><h2 id="点击add-configuration"><a class="markdownIt-Anchor" href="#点击add-configuration"></a> ## 点击ADD CONFIGURATION</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210307170029.png" alt="image-20210307170027649" /></p><h2 id="添加maven"><a class="markdownIt-Anchor" href="#添加maven"></a> 添加maven</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210307170013.png" alt="image-20210307170005367" /></p><h2 id="编辑command-line"><a class="markdownIt-Anchor" href="#编辑command-line"></a> 编辑Command Line</h2><p>···</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jetty:run</span><br></pre></td></tr></table></figure><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210307170154.png" alt="image-20210307170153480" /></p><h2 id="运行"><a class="markdownIt-Anchor" href="#运行"></a> 运行</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210307170320.png" alt="image-20210307170318668" /></p><blockquote><p>出现红框所示即成功</p></blockquote><h2 id="8080端口运行"><a class="markdownIt-Anchor" href="#8080端口运行"></a> 8080端口运行</h2><p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210307170459.png" alt="image-20210307170458497" /></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> java </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 项目 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Log4j</title>
       <link href="posts/63b10314/"/>
       <url>posts/63b10314/</url>
