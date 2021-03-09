@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Butterfly主题下的Pjax适配</title>
+      <link href="posts/7df3134e/"/>
+      <url>posts/7df3134e/</url>
+      
+        <content type="html"><![CDATA[<p>Butterfly主题集成了Pjax，但是一些自定义的js我们希望可以每次都加载。<br />Buttfly提供的方法是加入data-pjax<br />例如：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">data-pjax</span> <span class="attr">src</span>=<span class="string">&quot;/news/js/news.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure><p>但是有时控制台会报错：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Uncaught SyntaxError: Identifier &#x27;xxx&#x27; has already been declared</span><br></pre></td></tr></table></figure><p>原因在于声明某个变量使用的是const，这个声明方式一般用于常量（这里确实是常量），生命周期为打开站点到关闭站点全程，且无法被覆盖。<br />解决这一报错的方式有</p><ol><li>在另外的js中单独使用const声明该变量且不添加data-pjax，这样就不会反复声明。且有助于密钥加密。</li><li>将const声明方式换成let或者var，使得该值的生命周期允许它被反复声明（虽然是同一个值）。</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> hexo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+            <tag> Pjax </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>记录mybatis,mysql,mybatis-spring版本对应问题</title>
       <link href="posts/441cd253/"/>
       <url>posts/441cd253/</url>
