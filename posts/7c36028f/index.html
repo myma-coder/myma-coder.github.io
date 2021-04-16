@@ -1,0 +1,654 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>基于Servlet的简单验证码图片生成 | My's Blog</title><meta name="keywords" content="Java,Servlet"><meta name="author" content="my"><meta name="copyright" content="my"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="Servlet 技术 Random 函数 StringBuffer 字符串缓冲器 OutputStream 字节流输出 HTML 图片显示 本项目来自实验楼    简介 ​     验证码（CAPTCHA）是“Completely Automated Public Turing test to tell Computers and Humans Apart”（全自动区分计算机和人类的公开图灵测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Servlet的简单验证码图片生成">
+<meta property="og:url" content="https://mylovewxy.live/posts/7c36028f/index.html">
+<meta property="og:site_name" content="My&#39;s Blog">
+<meta property="og:description" content="Servlet 技术 Random 函数 StringBuffer 字符串缓冲器 OutputStream 字节流输出 HTML 图片显示 本项目来自实验楼    简介 ​     验证码（CAPTCHA）是“Completely Automated Public Turing test to tell Computers and Humans Apart”（全自动区分计算机和人类的公开图灵测">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/mywxy/image@master/12.jpg">
+<meta property="article:published_time" content="2021-03-10T11:05:53.000Z">
+<meta property="article:modified_time" content="2021-03-10T11:05:53.000Z">
+<meta property="article:author" content="my">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Servlet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/mywxy/image@master/12.jpg"><link rel="shortcut icon" href="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102234642.png"><link rel="canonical" href="https://mylovewxy.live/posts/7c36028f/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="HWj4HeAzpDuXluCc8U9l8XQCSLsGLizAuSWX2lSmfMk"/><meta name="baidu-site-verification" content="c9288e2323dadc71f0b9f364d0f0e5d1"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2021-03-10 19:05:53'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}const fontSizeVal = saveToLocal.get('global-font-size')
+if (fontSizeVal !== undefined) {
+  document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+}})()</script><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_9sosnv2poom.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC"><style type="text/css">#toggle-sidebar {left:100px}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/news/css/news.css"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.css"/><link rel="stylesheet" href="/css/custom.css"  media="defer" onload="this.media='all'"><script src="/live2d-widget/autoload.js"></script><!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">--><!--<script src="https://cdn.jsdelivr.net/gh/mywxy/live2d-widget@latest/autoload.js"></script>--><meta name="generator" content="Hexo 5.2.0"></head><body><a href="javascript:void(0);" onclick="preloader.endLoading();" title="点击跳过动画"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="iron-container iron-circle"><div class="iron-box1 iron-circle iron-center"></div><div class="iron-box2 iron-circle iron-center"></div><div class="iron-box3 iron-circle iron-center"></div><div class="iron-box4 iron-circle iron-center"></div><div class="iron-box5 iron-circle iron-center"></div><div class="iron-box6 iron-circle"><div class="iron-coil" style="--i: 0"></div><div class="iron-coil" style="--i: 1"></div><div class="iron-coil" style="--i: 2"></div><div class="iron-coil" style="--i: 3"></div><div class="iron-coil" style="--i: 4"></div><div class="iron-coil" style="--i: 5"></div><div class="iron-coil" style="--i: 6"></div><div class="iron-coil" style="--i: 7"></div></div></div></div></a><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">43</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-kongjian"></i><span> 空间</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/hpptalk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></li><li><a class="site-page" href="/bb/"><i class="fa-fw iconfont icon-bbs"></i><span> 哔哔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw iconfont icon-wo"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li><li><a class="site-page" target="_blank" rel="noopener" href="https://mypan.mymywxy.workers.dev/"><i class="fa-fw iconfont icon-Game"></i><span> 个人网盘</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/mywxy/image@master/12.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">My's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-kongjian"></i><span> 空间</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/hpptalk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></li><li><a class="site-page" href="/bb/"><i class="fa-fw iconfont icon-bbs"></i><span> 哔哔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw iconfont icon-lianjie"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw iconfont icon-wo"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li><li><a class="site-page" target="_blank" rel="noopener" href="https://mypan.mymywxy.workers.dev/"><i class="fa-fw iconfont icon-Game"></i><span> 个人网盘</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">基于Servlet的简单验证码图片生成</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-03-10T11:05:53.000Z" title="发表于 2021-03-10 19:05:53">2021-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-10T11:05:53.000Z" title="更新于 2021-03-10 19:05:53">2021-03-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<ul>
+<li>Servlet 技术</li>
+<li>Random 函数</li>
+<li>StringBuffer 字符串缓冲器</li>
+<li>OutputStream 字节流输出</li>
+<li>HTML 图片显示</li>
+<li>本项目来自<a target="_blank" rel="noopener" href="https://www.lanqiao.cn/courses/588">实验楼</a></li>
+</ul>
+</blockquote>
+<h2 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h2>
+<p>​     验证码（CAPTCHA）是“Completely Automated Public Turing test to tell Computers and Humans Apart”（全自动区分计算机和人类的公开图灵测试）的缩写，是一种区分用户是计算机还是人的公共全自动程序。</p>
+<p>​       它可以防止：恶意破解密码、刷票、论坛灌水，有效防止某个黑客对某一个特定注册用户用特定程序暴力破解方式进行不断的登录尝试，实际上用验证码是现在很多网站通行的方式，我们利用比较简易的方式实现了这个功能。这个问题可以由计算机生成并评判，但是必须只有人类才能解答。由于计算机无法解答 CAPTCHA 的问题，所以回答出问题的用户就可以被认为是人类。</p>
+<h2 id="函数介绍"><a class="markdownIt-Anchor" href="#函数介绍"></a> 函数介绍</h2>
+<h3 id="random"><a class="markdownIt-Anchor" href="#random"></a> Random</h3>
+<p>使用了生成随机数的函数 Random 。</p>
+<ul>
+<li><code>boolean nextBoolean()</code>：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的 boolean 值。</li>
+<li><code>double nextDouble()</code>：返回下一个伪随机数，它是取自此随机数生成器序列的、在 0.0 和 1.0 之间均匀分布的 double 值。</li>
+<li><code>float nextFloat()</code>：返回下一个伪随机数，它是取自此随机数生成器序列的、在 0.0 和 1.0 之间均匀分布 float 值。</li>
+<li><code>double nextGaussian()</code>：返回下一个伪随机数，它是取自此随机数生成器序列的、呈高斯（“正态”）分布的 double 值，其平均值是 0.0 标准差是 1.0。</li>
+<li><code>int nextInt()</code>：返回下一个伪随机数，它是此随机数生成器的序列中均匀分布的 int 值。</li>
+<li><code>int nextInt(int n)</code>：返回一个伪随机数，该方法的作用是生成一个随机的 int 值，该值介于[0,n)的区间，也就是 0 到 n 之间的随机 int 值，包含 0 而不包含 n。</li>
+<li><code>long nextLong()</code>：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的 long 值。</li>
+</ul>
+<h3 id="string-和-stringbuffer"><a class="markdownIt-Anchor" href="#string-和-stringbuffer"></a> String 和 StringBuffer</h3>
+<p>String 和 StringBuffer 他们都可以存储和操作字符串，即包含多个字符的字符串数据。</p>
+<p>​      String 类是字符串常量，是不可更改的常量。而 StringBuffer 是字符串变量，它的对象是可以扩充和修改的。</p>
+<p>​      StringBuffer 类的构造函数 <code>public StringBuffer()</code> 创建一个空的 StringBuffer 类的对象。 <code>public StringBuffer( int length )</code> 创建一个长度为参数 length 的 StringBuffer 类的对象。</p>
+<p>注意：如果参数 length 小于 0 ，将触发 NegativeArraySizeException 异常。 <code>public StringBuffer( String str )</code> 用一个已存在的字符串常量来创建 StringBuffer 类的对象。</p>
+<p>StringBuffer 的函数主要有：</p>
+<ul>
+<li><code>StringBuffer append(boolean b)</code>： 向字符串缓冲区“追加”元素，但是，这个“元素”参数可以是布尔量、字符、字符数组、双精度数、浮点数、整型数、长整型数对象类型的字符串、字符串和 StringBuffer 类等。如果添加的字符超出了字符串缓冲区的长度，Java 将自动进行扩充。</li>
+<li><code>char charAt(int index)</code> ：在当前 StringBuffer 对象中取索引号为 index 的字符。第一个字符的索引为“0”。</li>
+<li><code>StringBuffer delete(int start, int end)</code>： 删除当前 StringBuffer 对象中以索引号 start 开始，到 end 结束的子串。</li>
+<li><code>void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)</code>： 从当前 StringBuffer 对象的索引号 srcBegin 开始，到 srcEnd 结束的子串，赋值到字符数组 dst 中，并且从 dst 的索引号 dstBegin 开始。</li>
+<li><code>int indexOf(String str)</code>： 返回当前 StringBuffer 对象中，第一个满足 str 子串的位置。</li>
+<li><code>int length()</code>： 返回当前 StringBuffer 对象（字符缓冲区）中，字符串的长度。注意：此方法与 capacity() 不同。</li>
+</ul>
+<p>String 和 StringBuffer 他们都可以存储和操作字符串，即包含多个字符的字符串数据。</p>
+<p>String 类是字符串常量，是不可更改的常量。而 StringBuffer 是字符串变量，它的对象是可以扩充和修改的。</p>
+<p>StringBuffer 类的构造函数 <code>public StringBuffer()</code> 创建一个空的 StringBuffer 类的对象。 <code>public StringBuffer( int length )</code> 创建一个长度为参数 length 的 StringBuffer 类的对象。</p>
+<p>注意：如果参数 length 小于 0 ，将触发 NegativeArraySizeException 异常。 <code>public StringBuffer( String str )</code> 用一个已存在的字符串常量来创建 StringBuffer 类的对象。</p>
+<p>StringBuffer 的函数主要有：</p>
+<ul>
+<li><code>StringBuffer append(boolean b)</code>： 向字符串缓冲区“追加”元素，但是，这个“元素”参数可以是布尔量、字符、字符数组、双精度数、浮点数、整型数、长整型数对象类型的字符串、字符串和 StringBuffer 类等。如果添加的字符超出了字符串缓冲区的长度，Java 将自动进行扩充。</li>
+<li><code>char charAt(int index)</code> ：在当前 StringBuffer 对象中取索引号为 index 的字符。第一个字符的索引为“0”。</li>
+<li><code>StringBuffer delete(int start, int end)</code>： 删除当前 StringBuffer 对象中以索引号 start 开始，到 end 结束的子串。</li>
+<li><code>void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)</code>： 从当前 StringBuffer 对象的索引号 srcBegin 开始，到 srcEnd 结束的子串，赋值到字符数组 dst 中，并且从 dst 的索引号 dstBegin 开始。</li>
+<li><code>int indexOf(String str)</code>： 返回当前 StringBuffer 对象中，第一个满足 str 子串的位置。</li>
+<li><code>int length()</code>： 返回当前 StringBuffer 对象（字符缓冲区）中，字符串的长度。注意：此方法与 capacity() 不同。</li>
+</ul>
+<h3 id="outputstream"><a class="markdownIt-Anchor" href="#outputstream"></a> OutputStream</h3>
+<p>OutputStream 是所有表示位输出流的类之父类，它是一个抽象类。</p>
+<p>子类要重新定义其中所定义的抽象方法，OutputStream 是用于将数据写入目的地的抽象表示。例如 System 中的标准输出流对象 out 其类型是 <code>java.io.PrintStream</code> ，这个类是 <code>OutputStream</code> 的子类 (<code>java.io.FilterOutputStream</code> 继承 OutputStream， PrintStream 再继承 FilterOutputStream )。</p>
+<p>在程序开始之后，out 流对象就会开启，可以通过 out 来将数据写至目的地装置，这个装置通常是屏幕显示或用户定义的输出装置。</p>
+<p>常用的方法有：</p>
+<ul>
+<li><code>write(int)</code> 写一个字节到流中</li>
+<li><code>write(byte[])</code> 将数组中的内容写到流中</li>
+<li><code>write(byte[],int off,int len)</code> 将数组中从 off 指定的位置开始 len 长度的数据写到流中</li>
+<li><code>close()</code> 关闭流</li>
+<li><code>flush()</code> 将缓冲区中的数据强制输出</li>
+</ul>
+<h2 id="主要编程接口"><a class="markdownIt-Anchor" href="#主要编程接口"></a> 主要编程接口</h2>
+<blockquote>
+<p>Servlet（Server Applet），全称 Java Servlet 。它是用 Java 编写的服务器端程序。其主要功能在于交互式地浏览和修改数据，生成动态 Web 内容。狭义的 Servlet 是指 Java 语言实现的一个接口，广义的 Servlet 是指任何实现了这个 Servlet 接口的类，一般情况下，人们将 Servlet 理解为后者。 Servlet 运行于支持 Java 的应用服务器中。从原理上讲，Servlet 可以响应任何类型的请求，但绝大多数情况下 Servlet 只用来扩展基于 HTTP 协议的 Web 服务器。</p>
+</blockquote>
+<p>HTTPServlet 使用一个 HTML 表单来发送和接收数据。</p>
+<p>要创建一个 HTTPServlet，请扩展 HttpServlet 类， 该类是用专门的方法来处理 HTML 表单的 GenericServlet 的一个子类。</p>
+<p>HTML 表单是由 <code>&lt;form&gt;</code> 和 <code>&lt;/form&gt;</code> 标记定义的.表单中典型地包含输入字段（如文本输入字段、复选框、单选按钮和选择列表）和用于提交数据的按钮。</p>
+<p>当提交信息时，它们还指定服务器应执行哪一个 Servlet（或其它的程序）。 HttpServlet 类包含 <code>init()</code>、<code>destroy()</code>、<code>service()</code> 等方法。其中 <code>init()</code> 和 <code>destroy()</code> 方法是继承的。</p>
+<h3 id="1-init-方法"><a class="markdownIt-Anchor" href="#1-init-方法"></a> 1. <code>init()</code> 方法</h3>
+<p>在 Servlet 的生命期中，仅执行一次 init() 方法。它是在服务器装入 Servlet 时执行的。 可以配置服务器，以在启动服务器或客户机首次访问 Servlet 时装入 Servlet。 无论有多少客户机访问 Servlet，都不会重复执行 init() 。</p>
+<p>缺省的 init() 方法通常是符合要求的，但也可以用定制 init() 方法来覆盖它，典型的是管理服务器端资源。 例如，可能编写一个定制 init() 来只用于一次装入 GIF 图像，改进 Servlet 返回 GIF 图像和含有多个客户机请求的性能。</p>
+<p>另一个示例是初始化数据库连接。缺省的 init() 方法设置了 Servlet 的初始化参数，并用它的 ServletConfig 对象参数来启动配置， 因此所有覆盖 init() 方法的 Servlet 应调用 super.init() 以确保仍然执行这些任务。</p>
+<p>在调用 service() 方法之前，应确保已完成了 init() 方法。</p>
+<h3 id="2-doget方法"><a class="markdownIt-Anchor" href="#2-doget方法"></a> 2. <code>doGet()</code>方法</h3>
+<p>当一个客户通过 HTML 表单发出一个 HTTP GET 请求或直接请求一个 URL 时，doGet() 方法被调用。与 GET 请求相关的参数添加到 URL 的后面，并与这个请求一起发送。当不会修改服务器端的数据时，应该使用 doGet() 方法。</p>
+<h3 id="3-dopost方法"><a class="markdownIt-Anchor" href="#3-dopost方法"></a> 3. <code>doPost()</code>方法</h3>
+<p>当一个客户通过 HTML 表单发出一个 HTTP POST 请求时，doPost() 方法被调用。与 POST 请求相关的参数作为一个单独的 HTTP 请求从浏览器发送到服务器。当需要修改服务器端的数据时，应该使用 doPost() 方法。</p>
+<h2 id="主要代码"><a class="markdownIt-Anchor" href="#主要代码"></a> 主要代码</h2>
+<h3 id="captchajava"><a class="markdownIt-Anchor" href="#captchajava"></a> Captcha.java</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shiyanlou.java;</span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageIO;</span><br><span class="line"><span class="keyword">import</span> java.awt.*;</span><br><span class="line"><span class="keyword">import</span> java.awt.image.BufferedImage;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ：MY</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> ：2021/3/10 18:35</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Captcha</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置图片宽度。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> width = <span class="number">240</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置图片高度。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> height = <span class="number">100</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置验证码字符个数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> codeNum = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置验证码干扰线数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> lineNum = <span class="number">20</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置验证码字符串</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String code = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置验证码图片缓存</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> BufferedImage buffImg = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">char</span>[] codeQue = &#123;<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>, <span class="string">&#x27;D&#x27;</span>, <span class="string">&#x27;E&#x27;</span>, <span class="string">&#x27;F&#x27;</span>, <span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;H&#x27;</span>, <span class="string">&#x27;I&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;J&#x27;</span>, <span class="string">&#x27;K&#x27;</span>, <span class="string">&#x27;M&#x27;</span>, <span class="string">&#x27;N&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;Q&#x27;</span>, <span class="string">&#x27;R&#x27;</span>, <span class="string">&#x27;S&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;U&#x27;</span>, <span class="string">&#x27;V&#x27;</span>, <span class="string">&#x27;W&#x27;</span>, <span class="string">&#x27;X&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;Y&#x27;</span>, <span class="string">&#x27;Z&#x27;</span>, <span class="string">&#x27;2&#x27;</span>, <span class="string">&#x27;3&#x27;</span>, <span class="string">&#x27;4&#x27;</span>, <span class="string">&#x27;5&#x27;</span>, <span class="string">&#x27;6&#x27;</span>, <span class="string">&#x27;7&#x27;</span>, <span class="string">&#x27;8&#x27;</span>, <span class="string">&#x27;9&#x27;</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 生成随机数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Random random = <span class="keyword">new</span> Random();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 无参构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Captcha</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.createCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 有图片宽高的构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Captcha</span><span class="params">(<span class="keyword">int</span> width, <span class="keyword">int</span> height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.width = width;</span><br><span class="line">        <span class="keyword">this</span>.height = height;</span><br><span class="line">        <span class="keyword">this</span>.createCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 有图片宽高、字符个数、干扰线条数构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Captcha</span><span class="params">(<span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">int</span> codeNum, <span class="keyword">int</span> lineNum)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.width = width;</span><br><span class="line">        <span class="keyword">this</span>.height = height;</span><br><span class="line">        <span class="keyword">this</span>.codeNum = codeNum;</span><br><span class="line">        <span class="keyword">this</span>.lineNum = lineNum;</span><br><span class="line">        <span class="keyword">this</span>.createCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 每个字符的宽度</span></span><br><span class="line">        <span class="keyword">int</span> codeX = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> fontHeight = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 字体的高度</span></span><br><span class="line">        fontHeight = height - <span class="number">20</span>;</span><br><span class="line">        codeX = width / (codeNum + <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 图像 buffer</span></span><br><span class="line">        buffImg = <span class="keyword">new</span> BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);</span><br><span class="line">        Graphics2D g = buffImg.createGraphics();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 图像背景填充为白色</span></span><br><span class="line">        g.setColor(Color.WHITE);</span><br><span class="line">        g.fillRect(<span class="number">0</span>, <span class="number">0</span>, width, height);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建字体</span></span><br><span class="line">        ImgFontByte imgFont = <span class="keyword">new</span> ImgFontByte();</span><br><span class="line">        Font font = imgFont.getFont(fontHeight);</span><br><span class="line">        g.setFont(font);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绘制干扰线，对此处的参数公式进行修改，将会得到不同的验证码样式</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; lineNum; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> xP = getRandomNumber(width / <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">int</span> yP = getRandomNumber(height / <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">int</span> xD = xP + getRandomNumber(width * <span class="number">10</span>);</span><br><span class="line">            <span class="keyword">int</span> yD = yP + getRandomNumber(height * <span class="number">10</span>);</span><br><span class="line">            g.setColor(getRandomColor());</span><br><span class="line">            g.drawLine(xP, yP, xD, yD);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        StringBuffer randomCode = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        <span class="comment">// 在字符队列中，产生随机的验证码字符</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; codeNum; i++) &#123;</span><br><span class="line">            String strRand = String.valueOf(codeQue[random</span><br><span class="line">                    .nextInt(codeQue.length)]);</span><br><span class="line">            <span class="comment">// 设置字体颜色为随机获取</span></span><br><span class="line">            g.setColor(getRandomColor());</span><br><span class="line">            <span class="comment">// 设置字体位置尽量在图片中间，并且有聚集</span></span><br><span class="line">            g.drawString(strRand, (i + <span class="number">1</span>) * codeX,</span><br><span class="line">                    getRandomNumber(height / <span class="number">2</span>) + <span class="number">50</span>);</span><br><span class="line">            randomCode.append(strRand);</span><br><span class="line">        &#125;</span><br><span class="line">        code = randomCode.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取随机颜色</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Color <span class="title">getRandomColor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> r = getRandomNumber(<span class="number">255</span>);</span><br><span class="line">        <span class="keyword">int</span> g = getRandomNumber(<span class="number">255</span>);</span><br><span class="line">        <span class="keyword">int</span> b = getRandomNumber(<span class="number">255</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Color(r, g, b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取随机数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getRandomNumber</span><span class="params">(<span class="keyword">int</span> number)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> random.nextInt(number);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(OutputStream sos)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        ImageIO.write(buffImg, <span class="string">&quot;png&quot;</span>, sos);</span><br><span class="line">        sos.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 字体样式类</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ImgFontByte</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> Font <span class="title">getFont</span><span class="params">(<span class="keyword">int</span> fontHeight)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Font baseFont = Font.createFont(Font.TRUETYPE_FONT,</span><br><span class="line">                        <span class="keyword">new</span> ByteArrayInputStream(hex2byte(getFontByteStr())));</span><br><span class="line">                <span class="keyword">return</span> baseFont.deriveFont(Font.PLAIN, fontHeight);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Font(<span class="string">&quot;Arial&quot;</span>, Font.PLAIN, fontHeight);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">byte</span>[] hex2byte(String str) &#123;</span><br><span class="line">            <span class="keyword">if</span> (str == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            str = str.trim();</span><br><span class="line">            <span class="keyword">int</span> len = str.length();</span><br><span class="line">            <span class="keyword">if</span> (len == <span class="number">0</span> || len % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[len / <span class="number">2</span>];</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; str.length(); i += <span class="number">2</span>) &#123;</span><br><span class="line">                    b[i / <span class="number">2</span>] = (<span class="keyword">byte</span>) Integer.decode(</span><br><span class="line">                            <span class="string">&quot;0x&quot;</span> + str.substring(i, i + <span class="number">2</span>)).intValue();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> b;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 字体文件的十六进制字符串,使用文件流读入之前获取到的 HexString.txt 文件的内容。</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> String <span class="title">getFontByteStr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            String pathName = <span class="string">&quot;HexString.txt&quot;</span>;</span><br><span class="line">            File file = <span class="keyword">new</span> File(pathName);</span><br><span class="line">            String tempStr = <span class="keyword">null</span>;</span><br><span class="line">            BufferedReader reader;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(file));</span><br><span class="line">                tempStr = reader.readLine();</span><br><span class="line">                reader.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> tempStr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="captchaservletjava"><a class="markdownIt-Anchor" href="#captchaservletjava"></a> CaptchaServlet.java</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shiyanlou.servlet;</span><br><span class="line"><span class="keyword">import</span> com.shiyanlou.java.Captcha;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ：MY</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> ：2021/3/10 18:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CaptchaServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.doPost(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        <span class="comment">// 设置图片格式</span></span><br><span class="line">        resp.setContentType(<span class="string">&quot;image/jpeg&quot;</span>);</span><br><span class="line">        <span class="comment">// 禁止图像缓存</span></span><br><span class="line">        resp.setHeader(<span class="string">&quot;Pragma&quot;</span>, <span class="string">&quot;no-cache&quot;</span>);</span><br><span class="line">        resp.setHeader(<span class="string">&quot;Cache-Control&quot;</span>, <span class="string">&quot;no-cache&quot;</span>);</span><br><span class="line">        <span class="comment">//在代理服务器端防止缓冲</span></span><br><span class="line">        resp.setDateHeader(<span class="string">&quot;Expires&quot;</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        Captcha captcha = <span class="keyword">new</span> Captcha();</span><br><span class="line">        <span class="comment">//将验证码添加到session</span></span><br><span class="line">        req.getSession().setAttribute(<span class="string">&quot;captcha&quot;</span>, captcha.getCode());</span><br><span class="line">        captcha.write(resp.getOutputStream());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="loginservletjava"><a class="markdownIt-Anchor" href="#loginservletjava"></a> LoginServlet.java</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shiyanlou.servlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ：MY</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> ：2021/3/10 18:42</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginServlet</span>  <span class="keyword">extends</span> <span class="title">HttpServlet</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        doPost(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        req.setCharacterEncoding(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">        resp.setCharacterEncoding(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">        resp.setHeader(<span class="string">&quot;Content-type&quot;</span>, <span class="string">&quot;text/html;charset=UTF-8&quot;</span>);</span><br><span class="line">        <span class="comment">//从session中获得验证码</span></span><br><span class="line">        String captcha = (String) req.getSession().getAttribute(<span class="string">&quot;captcha&quot;</span>);</span><br><span class="line">        <span class="comment">//从表单获取用户名和密码</span></span><br><span class="line">        String username = req.getParameter(<span class="string">&quot;username&quot;</span>);</span><br><span class="line">        String password = req.getParameter(<span class="string">&quot;password&quot;</span>);</span><br><span class="line">        PrintWriter printWriter = resp.getWriter();</span><br><span class="line">        <span class="comment">//判断验证码是否正确</span></span><br><span class="line">        <span class="keyword">if</span> (!req.getParameter(<span class="string">&quot;captcha&quot;</span>).equals(captcha.toLowerCase())) &#123;</span><br><span class="line">            printWriter.write(<span class="string">&quot;验证码错误&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//判断密码</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;admin&quot;</span>.equals(username) &amp;&amp; <span class="string">&quot;123456&quot;</span>.equals(password)) &#123;</span><br><span class="line">            printWriter.write(<span class="string">&quot;登录成功&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            printWriter.write(<span class="string">&quot;登录失败/用户名或密码错误&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__title"><span class="post-copyright-info"><h>基于Servlet的简单验证码图片生成</h></span></div><div class="post-copyright__type"><span class="post-copyright-info"><a href="https://mylovewxy.live/posts/7c36028f/">https://mylovewxy.live/posts/7c36028f/</a></span></div><div class="post-copyright-m"><div class="post-copyright-m-info"><div class="post-copyright-a" style="display: inline-block;width: 120px"><h>作者</h><div class="post-copyright-cc-info"><h>my</h></div></div><div class="post-copyright-c" style="display: inline-block;width: 120px"><h>发布于</h><div class="post-copyright-cc-info"><h>2021-03-10</h></div></div><div class="post-copyright-u" style="display: inline-block;width: 120px"><h>更新于</h><div class="post-copyright-cc-info"><h>2021-03-10</h></div></div><div class="post-copyright-c" style="display: inline-block;width: 120px"><h>许可协议</h><div class="post-copyright-cc-info"><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a rel="noopener" target="_blank" title="CC BY 4.0" href="https://creativecommons.org/licenses/by/4.0/deed.zh">CC BY 4.0</a></div></div></div></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Servlet/">Servlet</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/mywxy/image@master/12.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/82f3f946/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/mywxy/image@master/1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">C3P0连接池详解及配置</div></div></a></div><div class="next-post pull-right"><a href="/posts/7df3134e/"><img class="next-cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231181829.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Butterfly主题下的Pjax适配</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/534dce78/" title="IDEA使用Maven运行项目"><img class="cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231181816.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-03-07</div><div class="title">IDEA使用Maven运行项目</div></div></a></div><div><a href="/posts/dd54693/" title="Java之基础知识总结（二）"><img class="cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-29</div><div class="title">Java之基础知识总结（二）</div></div></a></div><div><a href="/posts/30edc393/" title="Java实现在线协作文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/mywxy/image@master/8.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-03-11</div><div class="title">Java实现在线协作文档</div></div></a></div><div><a href="/posts/e89a5168/" title="Java常见关键字"><img class="cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231181833.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-05</div><div class="title">Java常见关键字</div></div></a></div><div><a href="/posts/7b88f31d/" title="Java知识-注解"><img class="cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-02</div><div class="title">Java知识-注解</div></div></a></div><div><a href="/posts/63b10314/" title="Log4j"><img class="cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201231135534.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-03-02</div><div class="title">Log4j</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201215122418.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">my</div><div class="author-info__description">我与我周旋久</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">43</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/mywxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/mywxy" target="_blank" title="Github"><i class="iconfont icon-github"></i></a><a class="social-icon" href="mailto:mymywxy@gmail.com" target="_blank" title="Email"><i class="iconfont icon-youxiang-mail_fill"></i></a><a class="social-icon" href="https://twitter.com/yongye13" target="_blank" title="Twitter"><i class="iconfont icon-twitter"></i></a></div></div></div><div class="card-widget card-recent-post"><div id="gamenews"><div class="card-content"><div class="item-headline"><i class="fas fa-cube"></i><span>ROLL资讯</span><i class="fas fa-retweet" @click="changetype(current)" style="float:right;margin-top:8px"></i></div><div class="newsbar"><span v-for="(type, index) in listtype" v-on:click="addClass(index)" v-bind:class="{ listtypeon:index==current}">{{type}}</span></div><div class="aside-list"><div class="aside-list-item" v-for="(news,index) in newsvue"><a class="thumbnail" href="javascript:void(0)" @click="getnewsdata(index)" :title="news.title"><img class="loaded" onerror="this.onerror=null;this.src='/img/404.jpg'" data-ll-status="loaded" :src="news.imgList[0]"/></a><div class="content"><a class="title" href="javascript:void(0)" @click="getnewsdata(index)" :title="news.title">{{news.title}}</a><time>{{news.postTime}}</time></div></div></div></div><div id="newsmodal"><button class="modalclose" @click="hidemodle()">关闭</button><h2>{{newpostvue.title}} </h2><h4>{{newpostvue.ptime}} &nbsp;&nbsp; {{newpostvue.source}}</h4><div v-html="newpostvue.content"></div></div></div></div><div class="card-widget card-pixiv"><div class="card-content"><div class="item-headline"><i class="fa fa-image" aria-hidden="true"></i><span>Pixiv日榜Top50</span><iframe src="https://cloud.mokeyjay.com/pixiv" frameborder="0" style="width:99%;height:380px;margin:0;"></iframe></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text"> 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text"> 函数介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#random"><span class="toc-number">2.1.</span> <span class="toc-text"> Random</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#string-%E5%92%8C-stringbuffer"><span class="toc-number">2.2.</span> <span class="toc-text"> String 和 StringBuffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#outputstream"><span class="toc-number">2.3.</span> <span class="toc-text"> OutputStream</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BC%96%E7%A8%8B%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.</span> <span class="toc-text"> 主要编程接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-init-%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text"> 1. init() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-doget%E6%96%B9%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text"> 2. doGet()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-dopost%E6%96%B9%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text"> 3. doPost()方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text"> 主要代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#captchajava"><span class="toc-number">4.1.</span> <span class="toc-text"> Captcha.java</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#captchaservletjava"><span class="toc-number">4.2.</span> <span class="toc-text"> CaptchaServlet.java</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#loginservletjava"><span class="toc-number">4.3.</span> <span class="toc-text"> LoginServlet.java</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-clock"><div id="clock"><img v-if="clockshow == &quot;false&quot;" alt="" src="/assets/weather/loading.gif" height="120px" width="100%"/><table class="clock" v-if="clockshow"><tbody><tr><td class="clockdate">{{date}}</td><td class="weatherimg"><img id="weatherimg" :src="weatherimg" alt=""/></td><td class="temperature">{{temperature}}</td><td class="humidityimg"><img id="humidityimg" :src="humidityimg" alt=""/></td><td class="humidity">{{humidity}}</td></tr><tr class="time"><td colspan="5">{{time}}</td></tr><tr><td class="usaqi" colspan="1"><span>{{ip}}</span></td><td class="city" colspan="2">{{city}}</td><td class="daylight" colspan="2">{{daylight}}</td></tr></tbody></table></div></div><script defer="defer" data-pjax="data-pjax" src="/js/card_clock.js"></script><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a2fdc053/" title="设计模式大总结"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/image.2wwssgeh6m00.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式大总结"/></a><div class="content"><a class="title" href="/posts/a2fdc053/" title="设计模式大总结">设计模式大总结</a><time datetime="2021-04-02T09:47:08.000Z" title="发表于 2021-04-02 17:47:08">2021-04-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2eb98691/" title="数据流的中位数"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/image.6z9wjjuh6bk0.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据流的中位数"/></a><div class="content"><a class="title" href="/posts/2eb98691/" title="数据流的中位数">数据流的中位数</a><time datetime="2021-03-20T05:52:56.000Z" title="发表于 2021-03-20 13:52:56">2021-03-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1e19723b/" title="剪绳子"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/sea-5603352_1920.773ieapaoa00.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="剪绳子"/></a><div class="content"><a class="title" href="/posts/1e19723b/" title="剪绳子">剪绳子</a><time datetime="2021-03-18T06:47:55.000Z" title="发表于 2021-03-18 14:47:55">2021-03-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/bb4d9cd8/" title="MP查询与删除"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/banner/3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MP查询与删除"/></a><div class="content"><a class="title" href="/posts/bb4d9cd8/" title="MP查询与删除">MP查询与删除</a><time datetime="2021-03-15T11:37:37.000Z" title="发表于 2021-03-15 19:37:37">2021-03-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dd91422d/" title="MyBatis-Plus简介"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/EibseeSpring_ZH-CN8314763420_1920x1080.22j9azygqtz4.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis-Plus简介"/></a><div class="content"><a class="title" href="/posts/dd91422d/" title="MyBatis-Plus简介">MyBatis-Plus简介</a><time datetime="2021-03-13T13:30:45.000Z" title="发表于 2021-03-13 21:30:45">2021-03-13</time></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://cdn.jsdelivr.net/gh/mywxy/image@master/12.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2021 By my</div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://demo.jerryc.me/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://metroui.org.ua/index.html "><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script defer src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer src="/js/search/local-search.js"></script><script async="async">var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> {preloader.endLoading()})
+setTimeout(function(){preloader.endLoading();}, 5000);</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', '', 'katex-wrap')
+  })
+})()</script><script>(()=>{
+  const $countDom = document.getElementById('twikoo-count')
+  const init = () => {
+    twikoo.init({
+      envId: 'my-2gdo2r5xbc8ec12c',
+      el: '#twikoo-wrap'
+    })
+  }
+
+  const getCount = () => {
+    twikoo.getCommentsCount({
+      envId: 'my-2gdo2r5xbc8ec12c',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      $countDom.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const loadTwikoo = (bool = false) => {
+    if (typeof twikoo === 'object') {
+      init()
+      bool && $countDom && setTimeout(()=>{getCount()},0)
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(()=> {
+        init()
+        bool && $countDom && setTimeout(()=>{getCount()},0)
+      })
+    }
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo(true)
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script>var gitcalendar = new Vue({
+  el: '#gitcalendar',
+  data: {
+    simplemode: true,
+    user: 'mywxy',
+    fixed: 'fixed',
+    px: 'px',
+    x: '',
+    y: '',
+    span1: '',
+    span2: '',
+    month: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    monthchange: [],
+    oneyearbeforeday: '',
+    thisday: '',
+    amonthago: '',
+    aweekago: '',
+    weekdatacore: 0,
+    datacore: 0,
+    total: 0,
+    datadate: '',
+    data: [],
+    positionplusdata: [],
+    firstweek: [],
+    lastweek: [],
+    beforeweek: [],
+    thisweekdatacore: 0,
+    mounthbeforeday: 0,
+    mounthfirstindex: 0,
+    crispedges: 'crispedges',
+    thisdayindex: 0,
+    amonthagoindex: 0,
+    amonthagoweek: [],
+    firstdate: [],
+    first2date: [],
+    montharrbefore: [],
+    monthindex: 0,
+    color: ['#e4dfd7', '#f9f4dc', '#f7e8aa', '#f7e8aa', '#f8df72', '#fcd217', '#fcc515', '#f28e16', '#fb8b05', '#d85916', '#f43e06']
+  },
+  methods: {
+    selectStyle(data, event) {
+      document.querySelector('.angle-wrapper').style.display = 'block'
+      this.span1 = data.date;
+      this.span2 = data.count;
+      this.x = event.clientX - 100;
+      this.y = event.clientY - 60
+    },
+    outStyle() {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+    },
+    thiscolor(x) {
+      if (x === 0) {
+        let i = parseInt(x / 2);
+        return this.color[0]
+      } else if (x < 2) {
+        return this.color[1]
+      } else if (x < 20) {
+        let i = parseInt(x / 2);
+        return this.color[i]
+      } else {
+        return this.color[9]
+      }
+    },
+  }
+});
+var apiurl = 'python-github-calendar-api-nine.vercel.app' ? 'https://python-github-calendar-api-nine.vercel.app/api?' : 'https://githubapi.ryanchristian.dev/user/'
+var githubapiurl = apiurl + gitcalendar.user;
+//canvas绘图
+function responsiveChart() {
+  let c = document.getElementById("gitcanvas");
+  if (c) {
+    let cmessage = document.getElementById("gitmessage");
+    let ctx = c.getContext("2d");
+    c.width = document.getElementById("gitcalendarcanvasbox").offsetWidth;
+    let linemaxwitdh = 0.96 * c.width / gitcalendar.data.length;
+    c.height = 9 * linemaxwitdh;
+    let lineminwitdh = 0.8 * linemaxwitdh;
+    let setposition = {
+      x: 0.02 * c.width,
+      y: 0.025 * c.width
+    };
+    for (let week in gitcalendar.data) {
+      weekdata = gitcalendar.data[week];
+      for (let day in weekdata) {
+        let dataitem = {
+          date: "",
+          count: "",
+          x: 0,
+          y: 0
+        };
+        gitcalendar.positionplusdata.push(dataitem);
+        ctx.fillStyle = gitcalendar.thiscolor(weekdata[day].count);
+        setposition.y = Math.round(setposition.y * 100) / 100;
+        dataitem.date = weekdata[day].date;
+        dataitem.count = weekdata[day].count;
+        dataitem.x = setposition.x;
+        dataitem.y = setposition.y;
+        ctx.fillRect(setposition.x, setposition.y, lineminwitdh, lineminwitdh);
+        setposition.y = setposition.y + linemaxwitdh
+      };
+      setposition.y = 0.025 * c.width;
+      setposition.x = setposition.x + linemaxwitdh
+    };
+    ctx.font = "600  Arial";
+    ctx.fillStyle = '#aaa';
+    ctx.fillText("日", 0, 1.9 * linemaxwitdh);
+    ctx.fillText("二", 0, 3.9 * linemaxwitdh);
+    ctx.fillText("四", 0, 5.9 * linemaxwitdh);
+    ctx.fillText("六", 0, 7.9 * linemaxwitdh);
+    let monthindexlist = c.width / 24;
+    for (let index in gitcalendar.monthchange) {
+      ctx.fillText(gitcalendar.monthchange[index], monthindexlist, 0.7 * linemaxwitdh);
+      monthindexlist = monthindexlist + c.width / 12
+    };
+    cmessage.onmousemove = function(event) {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+    };
+    c.onmousemove = function(event) {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+      getMousePos(c, event);
+    };
+
+    function getMousePos(canvas, event) {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.clientX - rect.left * (canvas.width / rect.width);
+      var y = event.clientY - rect.top * (canvas.height / rect.height);
+      //console.log("x:"+x+",y:"+y);
+      for (let item of gitcalendar.positionplusdata) {
+        let lenthx = x - item.x;
+        let lenthy = y - item.y;
+        //console.log(lenthx,lenthy);
+        if (0 < lenthx && lenthx < lineminwitdh) {
+          if (0 < lenthy && lenthy < lineminwitdh) {
+            //console.log(item.date,item.count)
+            document.querySelector('.angle-wrapper').style.display = 'block'
+            gitcalendar.span1 = item.date;
+            gitcalendar.span2 = item.count;
+            gitcalendar.x = event.clientX - 100;
+            gitcalendar.y = event.clientY - 60
+          }
+        }
+        //if(0< x - item.x <lineminwitdh&&0< y - item.y <lineminwitdh){
+        //console.log(item.count,item.date);
+        //}
+      }
+    }
+  }
+}
+//数据统计算法
+function addlastmonth() {
+  if (gitcalendar.thisdayindex === 0) {
+    thisweekcore(52);
+    thisweekcore(51);
+    thisweekcore(50);
+    thisweekcore(49);
+    thisweekcore(48);
+    gitcalendar.thisweekdatacore += gitcalendar.firstdate[6].count;
+    gitcalendar.amonthago = gitcalendar.firstdate[6].date
+  } else {
+    thisweekcore(52);
+    thisweekcore(51);
+    thisweekcore(50);
+    thisweekcore(49);
+    thisweek2core();
+    gitcalendar.amonthago = gitcalendar.first2date[gitcalendar.thisdayindex - 1].date
+  }
+};
+
+function thisweek2core() {
+  for (let i = gitcalendar.thisdayindex - 1; i < gitcalendar.first2date.length; i++) {
+    gitcalendar.thisweekdatacore += gitcalendar.first2date[i].count
+  }
+};
+
+function thisweekcore(index) {
+  for (let item of gitcalendar.data[index]) {
+    gitcalendar.thisweekdatacore += item.count
+  }
+};
+
+function addlastweek() {
+  for (let item of gitcalendar.lastweek) {
+    gitcalendar.weekdatacore += item.count
+  }
+};
+
+function addbeforeweek() {
+  for (let i = gitcalendar.thisdayindex; i < gitcalendar.beforeweek.length; i++) {
+    gitcalendar.weekdatacore += gitcalendar.beforeweek[i].count
+  }
+};
+
+function addweek(data) {
+  if (gitcalendar.thisdayindex === 6) {
+    gitcalendar.aweekago = gitcalendar.lastweek[0].date;
+    addlastweek()
+  } else {
+    lastweek = data.contributions[51];
+    gitcalendar.aweekago = lastweek[gitcalendar.thisdayindex + 1].date;
+    addlastweek();
+    addbeforeweek()
+  }
+}
+
+fetch(githubapiurl)
+  .then(data => data.json())
+  .then(data => {
+    gitcalendar.data = data.contributions;
+    gitcalendar.total = data.total;
+    gitcalendar.first2date = gitcalendar.data[48];
+    gitcalendar.firstdate = gitcalendar.data[47];
+    gitcalendar.firstweek = data.contributions[0];
+    gitcalendar.lastweek = data.contributions[52];
+    gitcalendar.beforeweek = data.contributions[51];
+    gitcalendar.thisdayindex = gitcalendar.lastweek.length - 1;
+    gitcalendar.thisday = gitcalendar.lastweek[gitcalendar.thisdayindex].date;
+    gitcalendar.oneyearbeforeday = gitcalendar.firstweek[0].date;
+    gitcalendar.monthindex = gitcalendar.thisday.substring(5, 7) * 1;
+    gitcalendar.montharrbefore = gitcalendar.month.splice(gitcalendar.monthindex, 12 - gitcalendar.monthindex);
+    gitcalendar.monthchange = gitcalendar.montharrbefore.concat(gitcalendar.month);
+    addweek(data);
+    addlastmonth();
+    responsiveChart();
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
+
+//手机版更换为svg绘制
+if (document.getElementById("gitcalendarcanvasbox").offsetWidth < 500) {
+  gitcalendar.simplemode = false
+}
+
+//当改变窗口大小时重新绘制canvas
+window.onresize = function() {
+  if (gitcalendar.simplemode) responsiveChart()
+}
+
+//解决滚动滑轮时出现的标签显示
+window.onscroll = function() {
+  if (document.querySelector('.angle-wrapper')) {
+    document.querySelector('.angle-wrapper').style.display = 'none'
+  }
+};</script></div><script defer src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/live2d-widget/autoload.js"></script><script async src="https://cdn.jsdelivr.net/gh/lete114/CDN/Sum/title.js"></script><script defer src="https://cdn.jsdelivr.net/npm/hexo-theme-volantis@latest/source/js/issues.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script><script defer src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script defer src="/news/js/keys.js"></script><script defer data-pjax src="/news/js/news.js"></script><div class="aplayer no-destroy" data-id="754551416" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="false" muted></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script><script src="//code.tidio.co/x1quuahdcuhkubwsyyqe4ug1m0jbfoqn.js" async="async"></script><script>function onTidioChatApiReady() {
+  window.tidioChatApi.hide();
+  window.tidioChatApi.on("close", function() {
+    window.tidioChatApi.hide();
+  });
+}
+if (window.tidioChatApi) {
+  window.tidioChatApi.on("ready", onTidioChatApiReady);
+} else {
+  document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+}
+
+var chatBtnFn = () => {
+  document.getElementById("chat_btn").addEventListener("click", function(){
+    window.tidioChatApi.show();
+    window.tidioChatApi.open();
+  });
+}
+chatBtnFn()
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config_change',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"]):not([href="/music/"]):not([href="/no-pjax/"]):not([href="/movies/"]):not([href="/bb/"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item =>{
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  if (typeof gtag === 'function') {
+    gtag('config', '', {'page_path': window.location.pathname});
+  }
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+
+document.addEventListener('pjax:send', function () {
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})</script><div class="GalMenu GalDropDown"><div class="circle" id="gal"><div class="ring"><a class="menuItem" href="/random/"><span>随机文章</span></a><a class="menuItem" href="javascript:location.reload();"><span>刷新</span></a><a class="menuItem" href="javascript:history.go(1);"><span>前进</span></a><a class="menuItem" href="javascript:history.go(-1);"><span>后退</span></a><a class="menuItem" href="#"><span>返回顶部</span></a><a class="menuItem" href="/hpptalk/"><span>说说</span></a></div></div><audio id="audio" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@v3.3.3_3/galmenu/galmenu.mp3"></audio></div><script defer="defer" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@bf_3.3.0_12/js/custom/galmenu.min.js"></script></div></body></html>
