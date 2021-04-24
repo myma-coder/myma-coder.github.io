@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>MySQL-InnoDB-MVCC多版本并发控制</title>
+      <link href="posts/85ac9139/"/>
+      <url>posts/85ac9139/</url>
+      
+        <content type="html"><![CDATA[<h1 id="mvcc"><a class="markdownIt-Anchor" href="#mvcc"></a> MVCC</h1><p>MVCC的实现是通过保存数据在某个时间点的快照来实现的、也就是说，不管需要执行多长时间、每个事务看到的数据都是一致的。根据事务开始的时间不同，每个事务对同一张表，同一时刻看到的数据可能是不一样的。</p><p>MVCC(Multiversion concurrency control) 多版本控制、提供并发访问数据库时、对事务内读取的到内存做处理，用来避免写操作堵塞读操作的并发问题</p><p>InnoDB的MVCC，是通过每行记录的后面保存两个隐藏的列来实现的，这两个列，一个保存了行的创建时间，另一个保存行的过期时间（或删除时间），当然存储的并不是实际时间值，而是系统的版本号，每开始一个新的事务，系统的版本号都会自动递增，事务开始时刻的系统版本号会作为事务的版本号，用来和查询的每行记录的版本号进行比较.</p><h1 id="执行过程"><a class="markdownIt-Anchor" href="#执行过程"></a> 执行过程</h1><h2 id="在rrread-repeatable隔离级别下mvcc的操作过程如下"><a class="markdownIt-Anchor" href="#在rrread-repeatable隔离级别下mvcc的操作过程如下"></a> 在RR（READ REPEATABLE）隔离级别下，MVCC的操作过程如下：</h2><h3 id="select操作"><a class="markdownIt-Anchor" href="#select操作"></a> select操作</h3><ol><li>InnoDb只查找版本早于（包含等于）当前事务版本的数据行。可以保证事务读取的行，要么在事务开始前已经存在的，要么事务操作（插入或者修改）</li><li>行的删除版本要么未定义，要么大于当前事务版本号。可以保证事务读取到的行，在事务开始之前未被删除</li></ol><h3 id="insert操作"><a class="markdownIt-Anchor" href="#insert操作"></a> insert操作</h3><ol><li>innodb为新插入的每行保存当前的版本号作为行插入标识</li></ol><h3 id="delete操作"><a class="markdownIt-Anchor" href="#delete操作"></a> delete操作</h3><ol><li>innodb为删除的行保存当前系统的版本号作为行删除标识</li></ol><h3 id="update操作"><a class="markdownIt-Anchor" href="#update操作"></a> update操作</h3><ol><li>innodb 为插入行记录、保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行作为行删除标识</li></ol><h2 id="好处"><a class="markdownIt-Anchor" href="#好处"></a> 好处</h2><p>Innodb保存这两个额外的系统版本号，是大多数都操作都可以不用加锁，这样设计使得都数据操作简单、性能很好，并且保证只会读取到符合标准的行。</p><h2 id="不足之处"><a class="markdownIt-Anchor" href="#不足之处"></a> 不足之处</h2><p>每行记录都需要增加额外的存储空间、需要更多的行检查工作，以及一些额外的维护工作。</p><h2 id="业余扩展"><a class="markdownIt-Anchor" href="#业余扩展"></a> 业余扩展</h2><ol><li>mysql默认的隔离级别是什么呢？mysql默认采用RR隔离级别</li><li>MVCC使用有哪些限制呢、MVCC可以在所有的隔离级别下工作吗？ NO，MVCC只在RR（repeatable read）和RC（read committed）这个两个级别下工作。因为RU(read uncommitted)总是读取最新的数据行，而不是符合当前事务版本的数据行，而Serializable则会对所有读取的行都锁</li><li>那么每次操作都会有快照的操作，什么情况下会删除呢？由于旧数据并不是真正的删除，需要对这写数据进行清理，Innodb会开启一个后台线程执行清理工作，清理的规则是：讲删除版本号小于当前系统版本的行删除，这个操作叫做purge</li><li>RC和RR在锁方面有什么不同？<ul><li>RR支持间隙锁（gap lock）Next-Key Lock 而 RC不支持间隙锁 （gap lock ） mysql的RR级别需要通过gap lock来解决幻读的问题，在RC隔离级别则允许存在不可重复读和幻读的，因此RC的并发一般要好于RR</li><li>RC 是通过where条件过滤之后，不符合条件的记录上的行锁，会释放掉（显然破坏了两阶段加锁的原则）但是RR隔离级别，即使不符合where条件的积累也不会释放行锁和gap lock 所以从锁的方面来看，RC的并发应该要好于RR</li></ul></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> Mysql </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Mysql </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>设计模式大总结</title>
       <link href="posts/a2fdc053/"/>
       <url>posts/a2fdc053/</url>
@@ -1212,7 +1237,7 @@
       <link href="posts/4f0ba5bf/"/>
       <url>posts/4f0ba5bf/</url>
       
-        <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">加密文章，请输入密码，输入后请刷新</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="84e867e92ca5b1f54e5a6ff1712653dcb1cf6a29a9eecfe298bf4fb82fcf93ef">7cdfed99358d50e9220497941f4f131b41e9edd17a97374655f382aa92406284a04872bd2a63e87fa4883fcf5f45d8475f11b47e424e4efa11f7917aca041e9282dd3f4d7b7cd6293754ec003ea3fef661586c5b7806dfad545467aece1afa6135066a1c07781cda1a8f990ab8f072511f48bc69c72783678ab7dc08249f215a1ae01635f3789fd123554454bba70296ad4973f66240d0a45b15d568f1c0bcba6d3b94cd6f206bb61426016afc92cf2bd79b4caf7038ba19983076144b4b2d71a27c0768d2d0572c4c669ab3c59abb7196fbad9f33dd1bbf54bd881a13e12ba33198f0de03d56e581740d49613122cb05f8c635c9224699873345b742be08b7bff24a98db0eccd3c805e8758ab2c726d5c6e806e63919f92433d370cfd302fdc26701585bcd2119478143772c93ded086b09c41999a07338804b73f8e9385f794d2db5d11c8139877b5dc9d6c44b01816ca5438cd578c77981406fd4842e5eacafca8ec4e8c70fda7b3dbeb4fdf0325d874eda8e700cbb3ec41d84f7bd06558cab3a4655ed9f85786b656dfbbf70e02220f3ae860dd5fa1b93658d04096c1ce0baac32572825a537a82593efc3fa3de5e15ed098122c350bea64de6ef067eac41557d8601cd6fb861a63745e8c8eaa72cc3c3c5f5b6402e7e05388da272d029741319cb110c79c39970ea650487d1b399c98f7b5d59d3eb7267f6939a38d4e454a60e3618ccd556652ea28571e17f815652aa25df902fb8ec04b326e44b5fffcd01a7f1c3ab86a7a24949378f902787ca03aca0a1653c6ab861b6132d3ed8f7d43e5015b57b9ec2e9e998657c0e3b4768bf63563005d519fe59c058b4c244406</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+        <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">加密文章，请输入密码，输入后请刷新</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="1e401a9a9a52b88098795b4a550ba4cf359c93631b6b723ff4562066c778b9d3">7cdfed99358d50e9220497941f4f131b41e9edd17a97374655f382aa9240628486942f258cfa370308a7e44bafb85a5f102b8cfc44f93e5340868b9c7db4c206994624153fa16694ae0ce003e956271a6528da45c42a8bcdf4d733c7626783f72116ad5d59f014cd4c1e9cc618b7173f7fd365b38240922a14907605afa75c65e498ca60fcbb5eb8482440b852940cc142083f5488365abe82ef37bd2a26ff24fc7b86391fe3b65eb8a7db6ecde825b457f86708a4d07c0b0c516255d1591d63403bc39ef631aa3b913bf183312bff5f3b60057084af2df2d33a503bfc4b786ca376079c571127254d702b11c46a4ec9531c3c829aac922e58b02a5cb8e400100d7a7987eb528c1a9fca08f28e1586bc952b79f8f98106d9f4f3a9e5bbd28ad7c2cafc7b81fcf2e54ab72ac20cf2a492ff1eda3dfaf7df0d3fd1ffe08fb434278a63de034af5823d4da916211934b9d39e1d93c2e360e64c0169b6e7af3fbe8f0a6b0a94cccd2b259a307bd33dd146da0baf02375a9e6fca165e47c88eccc81ad31d9ed043ac0e8717971d7377bdad0494496bfec162d9ef53fc0c4f905d37388a4b51c5ff28592cbb0e628de87fbd53e0437caf0a33553220acf5089cfc70ba2281c5a26d3adb97a18654128bf959e7d0917fe9b571c70d4e4dc22a2616e718ce2bc156a929d1e9c1fe2e341f8d8b7bfb237f79ba1cb20f469a27ab8dad5b09cb7eee7021f4ddacb023f5828f2678f902ebce524314996e3d19c8b9da6e6b1a2480e55b371e809ce55a40e9426325a243370f39a45923f8414ed7aa53a7fc82b4387f4fbe3bdd516be59a163df68a580db37863a71fc881968ada28f55a6239</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
       
       
       <categories>
@@ -1239,7 +1264,7 @@
       <link href="posts/f2d3a530/"/>
       <url>posts/f2d3a530/</url>
       
-        <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">加密文章，请输入密码，输入后请刷新</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="2f11b0b55e3bb496904fb7245983ae5d090b0a0fed5741cd3f00e275f5b419da">5894f32bea45f283d3abb01c929b9aef3b3e224b94f86c4efb69f2af15b75a316b09a866dea152f2c8554d2e0ba08606ed3e641c3184427a045fab348b07107e26dba21e6e2f3a24913fdcfb4d79056cb64d9e57090d3c09f59eb41f5289aed6791cb0e07aed509289810cd7f4949b9c1b173ef344c65225a7d9bb650428bcdc4a253aa39ef8b90853d2ecfb09880fd7a926fa457dd7da4f8e4dad617b080f00ff933d6358fa038dad753edd157cd7184255858ab0f5c6df3d334530085508a1fa61afc9d0708adbb04e7ba6444524f4bed01cbee3963551ed0c60163b3c2b892b3d5c5c8cddb1a573bbec4db88e6f85725a8c528ad7d98fc0885bc59668f7db2e1dd08bd8f1724ff5c33d245e634efbb0e77f291664c7afc562907e27a1d846922b93815e6d85bf2e028d8bc2fdb328de5288347df911c10942d55a8f5ab77579a96fcea15ddff98ebc3bd38cd4bc69f8abf93c95115f247ee87453b7772186c433f711bb7ffd854b9d5b6fe7fd37fe7444bbd002cad5c23503cb4c18f990d695776ccd3ad692ed724ca9eb0c522040</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+        <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">加密文章，请输入密码，输入后请刷新</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="afe335df50b0af6fa5f7c996769dd75edba83fae4b1a47d712025136b2a6a6e5">5894f32bea45f283d3abb01c929b9aef3b3e224b94f86c4efb69f2af15b75a31b5447241427c7d283179caaccfb9e6070121d353edcf3c3eb3f4fc3bf59b3be6defbc2374c1f3cf162effb025886a8d2e0b9d7c7c51020fb4a7c2ecb150c287f340d47ce8b4ebdc6ef20709d9fb6770f7f2ea84ece22dc91f6eeb4918d1b46cdfbeb6403106844e9437df5738ff64b8185901be0b5ec660d7e8f5ed3ea45afb602c7fd65684389345a9b2a034bff98b73614682f34b38927d5aabf26829fdc6824195729d42d5ae4566537b89d5141f9c2774787185c71669b1d195253fac53a9ccb0fa842554eddfca69dd895669c2f2489515add822093ebaa25018b43877d2dcab5b7e65751c9511580e3351b92abb57259e1799b877bb0f907994b8bcbbc257f6058f0c7ab62faeee7936c9a0566df103801573b552535c45fe2ade93a76b18ed86857323b9d04f5b6d5c5d6c585a33a5a6ddaa3065647216264733345731754ab663f1f0b938236cc4dd956b8affad4e27dbd63ced1beaeaac31bf94d15a02344536d37014004293cd8816d36bd</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
       
       
       <categories>
