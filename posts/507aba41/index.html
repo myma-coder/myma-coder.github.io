@@ -1,0 +1,619 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Https原理 | My's Blog</title><meta name="keywords" content="Https"><meta name="author" content="my"><meta name="copyright" content="my"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="Https原理 基于HTTP协议，通过SSL或TLS提供加密处理数据、验证对方身份以及数据完整性保护 有如下特点：  内容加密：采用混合加密技术，中间者无法直接查看明文内容 验证身份：通过证书认证客户端访问的是自己的服务器 保护数据完整性：防止传输的内容被中间人冒充或者篡改   **混合加密：**结合非对称加密和对称加密技术。客户端使用对称加密生成密钥对传输数据进行加密，然后使用非对称加密的公钥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https原理">
+<meta property="og:url" content="https://mylovewxy.live/posts/507aba41/index.html">
+<meta property="og:site_name" content="My&#39;s Blog">
+<meta property="og:description" content="Https原理 基于HTTP协议，通过SSL或TLS提供加密处理数据、验证对方身份以及数据完整性保护 有如下特点：  内容加密：采用混合加密技术，中间者无法直接查看明文内容 验证身份：通过证书认证客户端访问的是自己的服务器 保护数据完整性：防止传输的内容被中间人冒充或者篡改   **混合加密：**结合非对称加密和对称加密技术。客户端使用对称加密生成密钥对传输数据进行加密，然后使用非对称加密的公钥">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg">
+<meta property="article:published_time" content="2021-05-16T12:49:30.000Z">
+<meta property="article:modified_time" content="2021-05-16T12:49:30.000Z">
+<meta property="article:author" content="my">
+<meta property="article:tag" content="Https">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg"><link rel="shortcut icon" href="https://gitee.com/mymywxy/pic-go/raw/master/img/20210102234642.png"><link rel="canonical" href="https://mylovewxy.live/posts/507aba41/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="HWj4HeAzpDuXluCc8U9l8XQCSLsGLizAuSWX2lSmfMk"/><meta name="baidu-site-verification" content="c9288e2323dadc71f0b9f364d0f0e5d1"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-05-16 12:49:30'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}const fontSizeVal = saveToLocal.get('global-font-size')
+if (fontSizeVal !== undefined) {
+  document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+}})()</script><link rel="stylesheet" href="//at.alicdn.com/t/font_2272279_9sosnv2poom.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC"><style type="text/css">#toggle-sidebar {left:100px}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/news/css/news.css"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.css"/><link rel="stylesheet" href="/css/custom.css"  media="defer" onload="this.media='all'"><script src="/live2d-widget/autoload.js"></script><!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">--><!--<script src="https://cdn.jsdelivr.net/gh/mywxy/live2d-widget@latest/autoload.js"></script>--><meta name="generator" content="Hexo 5.2.0"></head><body><a href="javascript:void(0);" onclick="preloader.endLoading();" title="点击跳过动画"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="iron-container iron-circle"><div class="iron-box1 iron-circle iron-center"></div><div class="iron-box2 iron-circle iron-center"></div><div class="iron-box3 iron-circle iron-center"></div><div class="iron-box4 iron-circle iron-center"></div><div class="iron-box5 iron-circle iron-center"></div><div class="iron-box6 iron-circle"><div class="iron-coil" style="--i: 0"></div><div class="iron-coil" style="--i: 1"></div><div class="iron-coil" style="--i: 2"></div><div class="iron-coil" style="--i: 3"></div><div class="iron-coil" style="--i: 4"></div><div class="iron-coil" style="--i: 5"></div><div class="iron-coil" style="--i: 6"></div><div class="iron-coil" style="--i: 7"></div></div></div></div></a><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/avatar.mih18dfv400.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">54</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">44</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-kongjian"></i><span> 空间</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/hpptalk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></li><li><a class="site-page" href="/bb/"><i class="fa-fw iconfont icon-bbs"></i><span> 哔哔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/fcircle/"><i class="fa-fw iconfont icon-lianjie"></i><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw iconfont icon-wo"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li><li><a class="site-page" target="_blank" rel="noopener" href="https://mypan.mymywxy.workers.dev/"><i class="fa-fw iconfont icon-Game"></i><span> 个人网盘</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">My's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-zhuye"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw iconfont icon-biaoqian"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw iconfont icon-wenjianjia"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-qingdan"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw iconfont icon-yinyue"></i><span> 音乐</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw iconfont icon-xiangce"></i><span> 相册</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw iconfont icon-dianying"></i><span> 电影</span></a></li><li><a class="site-page" href="/bangumis/"><i class="fa-fw iconfont icon-bilibili-fill"></i><span> 追番</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-kongjian"></i><span> 空间</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/hpptalk/"><i class="fa-fw iconfont icon-41shuoshuo"></i><span> 说说</span></a></li><li><a class="site-page" href="/bb/"><i class="fa-fw iconfont icon-bbs"></i><span> 哔哔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/fcircle/"><i class="fa-fw iconfont icon-lianjie"></i><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw iconfont icon-wo"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw iconfont icon-box"></i><span> 百宝箱</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/box/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航页</span></a></li><li><a class="site-page" href="/game/2048/"><i class="fa-fw iconfont icon-Game"></i><span> 2048</span></a></li><li><a class="site-page" href="/game/catch-eat/"><i class="fa-fw iconfont icon-Game"></i><span> 圈小猫</span></a></li><li><a class="site-page" target="_blank" rel="noopener" href="https://mypan.mymywxy.workers.dev/"><i class="fa-fw iconfont icon-Game"></i><span> 个人网盘</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Https原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-05-16T12:49:30.000Z" title="发表于 2021-05-16 12:49:30">2021-05-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-05-16T12:49:30.000Z" title="更新于 2021-05-16 12:49:30">2021-05-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Https/">Https</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="https原理"><a class="markdownIt-Anchor" href="#https原理"></a> Https原理</h1>
+<p>基于HTTP协议，通过SSL或TLS提供加密处理数据、验证对方身份以及数据完整性保护<br />
+有如下特点：</p>
+<ol>
+<li>内容加密：采用混合加密技术，中间者无法直接查看明文内容</li>
+<li>验证身份：通过证书认证客户端访问的是自己的服务器</li>
+<li>保护数据完整性：防止传输的内容被中间人冒充或者篡改</li>
+</ol>
+<blockquote>
+<p>**混合加密：**结合非对称加密和对称加密技术。客户端使用对称加密生成密钥对传输数据进行加密，然后使用非对称加密的公钥再对秘钥进行加密，所以网络上传输的数据是被秘钥加密的密文和用公钥加密后的秘密秘钥，因此即使被黑客截取，由于没有私钥，无法获取到加密明文的秘钥，便无法获取到明文数据。</p>
+<p>**数字摘要：**通过单向hash函数对原文进行哈希，将需加密的明文“摘要”成一串固定长度(如128bit)的密文，不同的明文摘要成的密文其结果总是不相同，同样的明文其摘要必定一致，并且即使知道了摘要也不能反推出明文。</p>
+<p>**数字签名技术：**数字签名建立在公钥加密体制基础上，是公钥加密技术的另一类应用。它把公钥加密技术和数字摘要结合起来，形成了实用的数字签名技术。</p>
+</blockquote>
+<ul>
+<li>接收方能够证实发送方的真实身份；</li>
+<li>发送方事后不能否认所发送过的报文；</li>
+<li>收方或非法者不能伪造、篡改报文。</li>
+</ul>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210516125512.png" alt="image-20210516125503858" /></p>
+<p>非对称加密过程需要用到公钥进行加密，那么公钥从何而来？其实公钥就被包含在数字证书中，数字证书通常来说是由受信任的数字证书颁发机构CA，在验证服务器身份后颁发，证书中包含了一个密钥对（公钥和私钥）和所有者识别信息。数字证书被放到服务端，具有服务器身份验证和数据传输加密功能。</p>
+<h2 id="通信传输"><a class="markdownIt-Anchor" href="#通信传输"></a> 通信传输</h2>
+<p><strong>SSL建立连接过程</strong></p>
+<ol>
+<li>client向server发送请求，然后连接到server的443端口，发送的信息主要是随机值1和客户端支持的加密算法。</li>
+<li>server接收到信息之后给予client响应握手信息，包括随机值2和匹配好的协商加密算法，这个加密算法一定是client发送给server加密算法的子集。</li>
+<li>随即server给client发送第二个响应报文是数字证书。服务端必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问，而使用受信任的公司申请的证书则不会弹出提示页面，这套证书其实就是一对公钥和私钥。传送证书，这个证书其实就是公钥，只是包含了很多信息，如证书的颁发机构，过期时间、服务端的公钥，第三方证书认证机构(CA)的签名，服务端的域名信息等内容。</li>
+<li>客户端解析证书，这部分工作是由客户端的TLS来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个随即值（预主秘钥）。</li>
+<li>客户端认证证书通过之后，接下来是通过随机值1、随机值2和预主秘钥组装会话秘钥。然后通过证书的公钥加密会话秘钥。</li>
+<li>传送加密信息，这部分传送的是用证书加密后的会话秘钥，目的就是让服务端使用秘钥解密得到随机值1、随机值2和预主秘钥。</li>
+<li>服务端解密得到随机值1、随机值2和预主秘钥，然后组装会话秘钥，跟客户端会话秘钥相同。</li>
+<li>客户端通过会话秘钥加密一条消息发送给服务端，主要验证服务端是否正常接受客户端加密的消息。</li>
+<li>同样服务端也会通过会话秘钥加密一条消息回传给客户端，如果客户端能够正常接受的话表明SSL层连接建立完成了。</li>
+</ol>
+<h2 id="验证证书安全性过程"><a class="markdownIt-Anchor" href="#验证证书安全性过程"></a> <strong>验证证书安全性过程</strong></h2>
+<ol>
+<li>当客户端收到这个证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。</li>
+<li>然后证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。</li>
+</ol>
+<h2 id="中间人攻击"><a class="markdownIt-Anchor" href="#中间人攻击"></a> 中间人攻击</h2>
+<p>https也不是绝对安全的，如下图所示为中间人劫持攻击，中间人可以获取到客户端与服务器之间所有的通信内容。</p>
+<p><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20210516130610.png" alt="image-20210516130609112" /></p>
+<p>中间人截取客户端发送给服务器的请求，然后伪装成客户端与服务器进行通信；将服务器返回给客户端的内容发送给客户端，伪装成服务器与客户端进行通信。<br />
+通过这样的手段，便可以获取客户端和服务器之间通信的所有内容。<br />
+使用中间人攻击手段，必须要让客户端信任中间人的证书，如果客户端不信任，则这种攻击手段也无法发挥作用。</p>
+<h3 id="预防方式有两种"><a class="markdownIt-Anchor" href="#预防方式有两种"></a> 预防方式有两种</h3>
+<ol>
+<li>
+<p>针对安全性要求比较高的 app，可采取客户端预埋证书的方式锁死证书，只有当客户端证书和服务端的证书完全一致的情况下才允许通信，如一些银行类的app，但这种方式面临一个问题，证书过期的问题，因证书有一定的有效期，当预埋证书过期了，只有通过强制更新或者要求用户下载证书来解决。</p>
+</li>
+<li>
+<p>针对安全性要求一般的app，可采用通过校验域名，证书有效性、证书关键信息及证书链的方式</p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__title"><span class="post-copyright-info"><h>Https原理</h></span></div><div class="post-copyright__type"><span class="post-copyright-info"><a href="https://mylovewxy.live/posts/507aba41/">https://mylovewxy.live/posts/507aba41/</a></span></div><div class="post-copyright-m"><div class="post-copyright-m-info"><div class="post-copyright-a" style="display: inline-block;width: 120px"><h>作者</h><div class="post-copyright-cc-info"><h>my</h></div></div><div class="post-copyright-c" style="display: inline-block;width: 120px"><h>发布于</h><div class="post-copyright-cc-info"><h>2021-05-16</h></div></div><div class="post-copyright-u" style="display: inline-block;width: 120px"><h>更新于</h><div class="post-copyright-cc-info"><h>2021-05-16</h></div></div><div class="post-copyright-c" style="display: inline-block;width: 120px"><h>许可协议</h><div class="post-copyright-cc-info"><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a rel="noopener" target="_blank" title="CC BY 4.0" href="https://creativecommons.org/licenses/by/4.0/deed.zh">CC BY 4.0</a></div></div></div></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Https/">Https</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/85ac9139/"><img class="next-cover" src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201216180113.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MySQL-InnoDB-MVCC多版本并发控制</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/avatar.mih18dfv400.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">my</div><div class="author-info__description">我与我周旋久</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">54</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">44</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/mywxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/mywxy" target="_blank" title="Github"><i class="iconfont icon-github"></i></a><a class="social-icon" href="mailto:mymywxy@gmail.com" target="_blank" title="Email"><i class="iconfont icon-youxiang-mail_fill"></i></a><a class="social-icon" href="https://twitter.com/yongye13" target="_blank" title="Twitter"><i class="iconfont icon-twitter"></i></a></div></div></div><div class="card-widget card-recent-post"><div id="gamenews"><div class="card-content"><div class="item-headline"><i class="fas fa-cube"></i><span>ROLL资讯</span><i class="fas fa-retweet" @click="changetype(current)" style="float:right;margin-top:8px"></i></div><div class="newsbar"><span v-for="(type, index) in listtype" v-on:click="addClass(index)" v-bind:class="{ listtypeon:index==current}">{{type}}</span></div><div class="aside-list"><div class="aside-list-item" v-for="(news,index) in newsvue"><a class="thumbnail" href="javascript:void(0)" @click="getnewsdata(index)" :title="news.title"><img class="loaded" onerror="this.onerror=null;this.src='/img/404.jpg'" data-ll-status="loaded" :src="news.imgList[0]"/></a><div class="content"><a class="title" href="javascript:void(0)" @click="getnewsdata(index)" :title="news.title">{{news.title}}</a><time>{{news.postTime}}</time></div></div></div></div><div id="newsmodal"><button class="modalclose" @click="hidemodle()">关闭</button><h2>{{newpostvue.title}} </h2><h4>{{newpostvue.ptime}} &nbsp;&nbsp; {{newpostvue.source}}</h4><div v-html="newpostvue.content"></div></div></div></div><div class="card-widget card-pixiv"><div class="card-content"><div class="item-headline"><i class="fa fa-image" aria-hidden="true"></i><span>Pixiv日榜Top50</span><iframe src="https://cloud.mokeyjay.com/pixiv" frameborder="0" style="width:99%;height:380px;margin:0;"></iframe></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#https%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text"> Https原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E4%BF%A1%E4%BC%A0%E8%BE%93"><span class="toc-number">1.1.</span> <span class="toc-text"> 通信传输</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E8%AF%81%E4%B9%A6%E5%AE%89%E5%85%A8%E6%80%A7%E8%BF%87%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text"> 验证证书安全性过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB"><span class="toc-number">1.3.</span> <span class="toc-text"> 中间人攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E9%98%B2%E6%96%B9%E5%BC%8F%E6%9C%89%E4%B8%A4%E7%A7%8D"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 预防方式有两种</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-clock"><div id="clock"><img v-if="clockshow == &quot;false&quot;" alt="" src="/assets/weather/loading.gif" height="120px" width="100%"/><table class="clock" v-if="clockshow"><tbody><tr><td class="clockdate">{{date}}</td><td class="weatherimg"><img id="weatherimg" :src="weatherimg" alt=""/></td><td class="temperature">{{temperature}}</td><td class="humidityimg"><img id="humidityimg" :src="humidityimg" alt=""/></td><td class="humidity">{{humidity}}</td></tr><tr class="time"><td colspan="5">{{time}}</td></tr><tr><td class="usaqi" colspan="1"><span>{{ip}}</span></td><td class="city" colspan="2">{{city}}</td><td class="daylight" colspan="2">{{daylight}}</td></tr></tbody></table></div></div><script defer="defer" data-pjax="data-pjax" src="/js/card_clock.js"></script><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/507aba41/" title="Https原理"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Https原理"/></a><div class="content"><a class="title" href="/posts/507aba41/" title="Https原理">Https原理</a><time datetime="2021-05-16T12:49:30.000Z" title="发表于 2021-05-16 12:49:30">2021-05-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/85ac9139/" title="MySQL-InnoDB-MVCC多版本并发控制"><img src="https://gitee.com/mymywxy/pic-go/raw/master/img/20201216180113.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL-InnoDB-MVCC多版本并发控制"/></a><div class="content"><a class="title" href="/posts/85ac9139/" title="MySQL-InnoDB-MVCC多版本并发控制">MySQL-InnoDB-MVCC多版本并发控制</a><time datetime="2021-04-24T15:51:54.000Z" title="发表于 2021-04-24 15:51:54">2021-04-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a2fdc053/" title="设计模式大总结"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/image.2wwssgeh6m00.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式大总结"/></a><div class="content"><a class="title" href="/posts/a2fdc053/" title="设计模式大总结">设计模式大总结</a><time datetime="2021-04-02T17:47:08.000Z" title="发表于 2021-04-02 17:47:08">2021-04-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2eb98691/" title="数据流的中位数"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/image.6z9wjjuh6bk0.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据流的中位数"/></a><div class="content"><a class="title" href="/posts/2eb98691/" title="数据流的中位数">数据流的中位数</a><time datetime="2021-03-20T13:52:56.000Z" title="发表于 2021-03-20 13:52:56">2021-03-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1e19723b/" title="剪绳子"><img src="https://cdn.jsdelivr.net/gh/mywxy/image@master/sea-5603352_1920.773ieapaoa00.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="剪绳子"/></a><div class="content"><a class="title" href="/posts/1e19723b/" title="剪绳子">剪绳子</a><time datetime="2021-03-18T14:47:55.000Z" title="发表于 2021-03-18 14:47:55">2021-03-18</time></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://cdn.jsdelivr.net/gh/mywxy/image@master/PicxImage/network-3537401_1920.6nzxq9tpyys0.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2021 By my</div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://demo.jerryc.me/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://metroui.org.ua/index.html "><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script defer src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer src="/js/search/local-search.js"></script><script async="async">var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> {preloader.endLoading()})
+setTimeout(function(){preloader.endLoading();}, 5000);</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', '', 'katex-wrap')
+  })
+})()</script><script>(()=>{
+  const $countDom = document.getElementById('twikoo-count')
+  const init = () => {
+    twikoo.init({
+      envId: 'my-2gdo2r5xbc8ec12c',
+      el: '#twikoo-wrap'
+    })
+  }
+
+  const getCount = () => {
+    twikoo.getCommentsCount({
+      envId: 'my-2gdo2r5xbc8ec12c',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      $countDom.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const loadTwikoo = (bool = false) => {
+    if (typeof twikoo === 'object') {
+      init()
+      bool && $countDom && setTimeout(()=>{getCount()},0)
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(()=> {
+        init()
+        bool && $countDom && setTimeout(()=>{getCount()},0)
+      })
+    }
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo(true)
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script>var gitcalendar = new Vue({
+  el: '#gitcalendar',
+  data: {
+    simplemode: true,
+    user: 'mywxy',
+    fixed: 'fixed',
+    px: 'px',
+    x: '',
+    y: '',
+    span1: '',
+    span2: '',
+    month: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    monthchange: [],
+    oneyearbeforeday: '',
+    thisday: '',
+    amonthago: '',
+    aweekago: '',
+    weekdatacore: 0,
+    datacore: 0,
+    total: 0,
+    datadate: '',
+    data: [],
+    positionplusdata: [],
+    firstweek: [],
+    lastweek: [],
+    beforeweek: [],
+    thisweekdatacore: 0,
+    mounthbeforeday: 0,
+    mounthfirstindex: 0,
+    crispedges: 'crispedges',
+    thisdayindex: 0,
+    amonthagoindex: 0,
+    amonthagoweek: [],
+    firstdate: [],
+    first2date: [],
+    montharrbefore: [],
+    monthindex: 0,
+    color: ['#e4dfd7', '#f9f4dc', '#f7e8aa', '#f7e8aa', '#f8df72', '#fcd217', '#fcc515', '#f28e16', '#fb8b05', '#d85916', '#f43e06']
+  },
+  methods: {
+    selectStyle(data, event) {
+      document.querySelector('.angle-wrapper').style.display = 'block'
+      this.span1 = data.date;
+      this.span2 = data.count;
+      this.x = event.clientX - 100;
+      this.y = event.clientY - 60
+    },
+    outStyle() {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+    },
+    thiscolor(x) {
+      if (x === 0) {
+        let i = parseInt(x / 2);
+        return this.color[0]
+      } else if (x < 2) {
+        return this.color[1]
+      } else if (x < 20) {
+        let i = parseInt(x / 2);
+        return this.color[i]
+      } else {
+        return this.color[9]
+      }
+    },
+  }
+});
+var apiurl = 'python-github-calendar-api-nine.vercel.app' ? 'https://python-github-calendar-api-nine.vercel.app/api?' : 'https://githubapi.ryanchristian.dev/user/'
+var githubapiurl = apiurl + gitcalendar.user;
+//canvas绘图
+function responsiveChart() {
+  let c = document.getElementById("gitcanvas");
+  if (c) {
+    let cmessage = document.getElementById("gitmessage");
+    let ctx = c.getContext("2d");
+    c.width = document.getElementById("gitcalendarcanvasbox").offsetWidth;
+    let linemaxwitdh = 0.96 * c.width / gitcalendar.data.length;
+    c.height = 9 * linemaxwitdh;
+    let lineminwitdh = 0.8 * linemaxwitdh;
+    let setposition = {
+      x: 0.02 * c.width,
+      y: 0.025 * c.width
+    };
+    for (let week in gitcalendar.data) {
+      weekdata = gitcalendar.data[week];
+      for (let day in weekdata) {
+        let dataitem = {
+          date: "",
+          count: "",
+          x: 0,
+          y: 0
+        };
+        gitcalendar.positionplusdata.push(dataitem);
+        ctx.fillStyle = gitcalendar.thiscolor(weekdata[day].count);
+        setposition.y = Math.round(setposition.y * 100) / 100;
+        dataitem.date = weekdata[day].date;
+        dataitem.count = weekdata[day].count;
+        dataitem.x = setposition.x;
+        dataitem.y = setposition.y;
+        ctx.fillRect(setposition.x, setposition.y, lineminwitdh, lineminwitdh);
+        setposition.y = setposition.y + linemaxwitdh
+      };
+      setposition.y = 0.025 * c.width;
+      setposition.x = setposition.x + linemaxwitdh
+    };
+    ctx.font = "600  Arial";
+    ctx.fillStyle = '#aaa';
+    ctx.fillText("日", 0, 1.9 * linemaxwitdh);
+    ctx.fillText("二", 0, 3.9 * linemaxwitdh);
+    ctx.fillText("四", 0, 5.9 * linemaxwitdh);
+    ctx.fillText("六", 0, 7.9 * linemaxwitdh);
+    let monthindexlist = c.width / 24;
+    for (let index in gitcalendar.monthchange) {
+      ctx.fillText(gitcalendar.monthchange[index], monthindexlist, 0.7 * linemaxwitdh);
+      monthindexlist = monthindexlist + c.width / 12
+    };
+    cmessage.onmousemove = function(event) {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+    };
+    c.onmousemove = function(event) {
+      document.querySelector('.angle-wrapper').style.display = 'none'
+      getMousePos(c, event);
+    };
+
+    function getMousePos(canvas, event) {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.clientX - rect.left * (canvas.width / rect.width);
+      var y = event.clientY - rect.top * (canvas.height / rect.height);
+      //console.log("x:"+x+",y:"+y);
+      for (let item of gitcalendar.positionplusdata) {
+        let lenthx = x - item.x;
+        let lenthy = y - item.y;
+        //console.log(lenthx,lenthy);
+        if (0 < lenthx && lenthx < lineminwitdh) {
+          if (0 < lenthy && lenthy < lineminwitdh) {
+            //console.log(item.date,item.count)
+            document.querySelector('.angle-wrapper').style.display = 'block'
+            gitcalendar.span1 = item.date;
+            gitcalendar.span2 = item.count;
+            gitcalendar.x = event.clientX - 100;
+            gitcalendar.y = event.clientY - 60
+          }
+        }
+        //if(0< x - item.x <lineminwitdh&&0< y - item.y <lineminwitdh){
+        //console.log(item.count,item.date);
+        //}
+      }
+    }
+  }
+}
+//数据统计算法
+function addlastmonth() {
+  if (gitcalendar.thisdayindex === 0) {
+    thisweekcore(52);
+    thisweekcore(51);
+    thisweekcore(50);
+    thisweekcore(49);
+    thisweekcore(48);
+    gitcalendar.thisweekdatacore += gitcalendar.firstdate[6].count;
+    gitcalendar.amonthago = gitcalendar.firstdate[6].date
+  } else {
+    thisweekcore(52);
+    thisweekcore(51);
+    thisweekcore(50);
+    thisweekcore(49);
+    thisweek2core();
+    gitcalendar.amonthago = gitcalendar.first2date[gitcalendar.thisdayindex - 1].date
+  }
+};
+
+function thisweek2core() {
+  for (let i = gitcalendar.thisdayindex - 1; i < gitcalendar.first2date.length; i++) {
+    gitcalendar.thisweekdatacore += gitcalendar.first2date[i].count
+  }
+};
+
+function thisweekcore(index) {
+  for (let item of gitcalendar.data[index]) {
+    gitcalendar.thisweekdatacore += item.count
+  }
+};
+
+function addlastweek() {
+  for (let item of gitcalendar.lastweek) {
+    gitcalendar.weekdatacore += item.count
+  }
+};
+
+function addbeforeweek() {
+  for (let i = gitcalendar.thisdayindex; i < gitcalendar.beforeweek.length; i++) {
+    gitcalendar.weekdatacore += gitcalendar.beforeweek[i].count
+  }
+};
+
+function addweek(data) {
+  if (gitcalendar.thisdayindex === 6) {
+    gitcalendar.aweekago = gitcalendar.lastweek[0].date;
+    addlastweek()
+  } else {
+    lastweek = data.contributions[51];
+    gitcalendar.aweekago = lastweek[gitcalendar.thisdayindex + 1].date;
+    addlastweek();
+    addbeforeweek()
+  }
+}
+
+fetch(githubapiurl)
+  .then(data => data.json())
+  .then(data => {
+    gitcalendar.data = data.contributions;
+    gitcalendar.total = data.total;
+    gitcalendar.first2date = gitcalendar.data[48];
+    gitcalendar.firstdate = gitcalendar.data[47];
+    gitcalendar.firstweek = data.contributions[0];
+    gitcalendar.lastweek = data.contributions[52];
+    gitcalendar.beforeweek = data.contributions[51];
+    gitcalendar.thisdayindex = gitcalendar.lastweek.length - 1;
+    gitcalendar.thisday = gitcalendar.lastweek[gitcalendar.thisdayindex].date;
+    gitcalendar.oneyearbeforeday = gitcalendar.firstweek[0].date;
+    gitcalendar.monthindex = gitcalendar.thisday.substring(5, 7) * 1;
+    gitcalendar.montharrbefore = gitcalendar.month.splice(gitcalendar.monthindex, 12 - gitcalendar.monthindex);
+    gitcalendar.monthchange = gitcalendar.montharrbefore.concat(gitcalendar.month);
+    addweek(data);
+    addlastmonth();
+    responsiveChart();
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
+
+//手机版更换为svg绘制
+if (document.getElementById("gitcalendarcanvasbox").offsetWidth < 500) {
+  gitcalendar.simplemode = false
+}
+
+//当改变窗口大小时重新绘制canvas
+window.onresize = function() {
+  if (gitcalendar.simplemode) responsiveChart()
+}
+
+//解决滚动滑轮时出现的标签显示
+window.onscroll = function() {
+  if (document.querySelector('.angle-wrapper')) {
+    document.querySelector('.angle-wrapper').style.display = 'none'
+  }
+};</script></div><script defer src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/live2d-widget/autoload.js"></script><script async src="https://cdn.jsdelivr.net/gh/lete114/CDN/Sum/title.js"></script><script defer src="https://cdn.jsdelivr.net/npm/hexo-theme-volantis@latest/source/js/issues.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script><script defer src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script defer src="/news/js/keys.js"></script><script defer data-pjax src="/news/js/news.js"></script><div class="aplayer no-destroy" data-id="754551416" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="false" muted></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script><script src="//code.tidio.co/x1quuahdcuhkubwsyyqe4ug1m0jbfoqn.js" async="async"></script><script>function onTidioChatApiReady() {
+  window.tidioChatApi.hide();
+  window.tidioChatApi.on("close", function() {
+    window.tidioChatApi.hide();
+  });
+}
+if (window.tidioChatApi) {
+  window.tidioChatApi.on("ready", onTidioChatApiReady);
+} else {
+  document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+}
+
+var chatBtnFn = () => {
+  document.getElementById("chat_btn").addEventListener("click", function(){
+    window.tidioChatApi.show();
+    window.tidioChatApi.open();
+  });
+}
+chatBtnFn()
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config_change',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"]):not([href="/music/"]):not([href="/no-pjax/"]):not([href="/movies/"]):not([href="/bb/"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item =>{
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  if (typeof gtag === 'function') {
+    gtag('config', '', {'page_path': window.location.pathname});
+  }
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+
+document.addEventListener('pjax:send', function () {
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})</script><div class="GalMenu GalDropDown"><div class="circle" id="gal"><div class="ring"><a class="menuItem" href="/random/"><span>随机文章</span></a><a class="menuItem" href="javascript:location.reload();"><span>刷新</span></a><a class="menuItem" href="javascript:history.go(1);"><span>前进</span></a><a class="menuItem" href="javascript:history.go(-1);"><span>后退</span></a><a class="menuItem" href="#"><span>返回顶部</span></a><a class="menuItem" href="/hpptalk/"><span>说说</span></a></div></div><audio id="audio" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@v3.3.3_3/galmenu/galmenu.mp3"></audio></div><script defer="defer" src="https://cdn.jsdelivr.net/gh/Akilarlxh/Akilarlxh.github.io@bf_3.3.0_12/js/custom/galmenu.min.js"></script></div></body></html>
